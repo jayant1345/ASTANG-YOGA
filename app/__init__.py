@@ -58,5 +58,27 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        _auto_create_admin()
 
     return app
+
+
+def _auto_create_admin():
+    """Auto-create admin on first deploy using ADMIN_EMAIL / ADMIN_PASSWORD env vars."""
+    import os
+    from app.models import User
+    admin_email = os.environ.get('ADMIN_EMAIL')
+    admin_password = os.environ.get('ADMIN_PASSWORD')
+    if not admin_email or not admin_password:
+        return
+    if User.query.filter_by(role='admin').first():
+        return
+    admin = User(
+        name=os.environ.get('ADMIN_NAME', 'Super Admin'),
+        email=admin_email,
+        role='admin',
+        is_active=True,
+    )
+    admin.set_password(admin_password)
+    db.session.add(admin)
+    db.session.commit()
