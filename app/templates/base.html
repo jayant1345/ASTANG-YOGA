@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Astang Yoga{% endblock %}</title>
+  <title>{% block title %}Ashtang Yoga School{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
@@ -14,7 +14,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-yoga sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
-      <i class="bi bi-flower1 me-1"></i>Astang Yoga
+      <i class="bi bi-flower1 me-1"></i>Ashtang Yoga School
     </a>
     {% if current_user.is_authenticated %}
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
