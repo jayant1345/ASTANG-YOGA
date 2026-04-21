@@ -29,10 +29,13 @@ def create_admin(name, email, password):
 
 @app.cli.command('init-db')
 def init_db():
-    """Create all database tables."""
+    """Create all database tables and auto-create admin from env vars."""
+    from app import _auto_create_admin
     with app.app_context():
         db.create_all()
         click.echo('Database tables created.')
+        _auto_create_admin()
+        click.echo('Admin check complete.')
 
 
 @app.cli.command('seed-classes')
