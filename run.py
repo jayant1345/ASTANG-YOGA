@@ -29,23 +29,24 @@ def create_admin(name, email, password):
 
 @app.cli.command('init-db')
 def init_db():
-    """Create all database tables and auto-create admin from env vars."""
+    """Create tables, auto-create admin, and seed classes — safe to re-run."""
     from app import _auto_create_admin
-    with app.app_context():
-        db.create_all()
-        click.echo('Database tables created.')
-        _auto_create_admin()
-        click.echo('Admin check complete.')
-
-
-@app.cli.command('seed-classes')
-def seed_classes():
-    """Seed the 9 default yoga batch classes (skips if already present)."""
     from app.models import YogaClass
     with app.app_context():
+        db.create_all()
+        click.echo('Tables ready.')
+
+        _auto_create_admin()
+
         if YogaClass.query.first():
-            click.echo('Classes already exist — skipping seed.')
+            click.echo('Classes already seeded.')
             return
+
+        admin = User.query.filter_by(role='admin').first()
+        if not admin:
+            click.echo('No admin found — set ADMIN_EMAIL and ADMIN_PASSWORD env vars.')
+            return
+
         classes = [
             ('Morning 06:15 Batch', '06:15 AM', 'Main Hall', 2500.0),
             ('Morning 07:15 Batch', '07:15 AM', 'Main Hall', 2500.0),
@@ -57,16 +58,10 @@ def seed_classes():
             ('Evening 06:15 Batch', '06:15 PM', 'Main Hall', 2500.0),
             ('Evening 07:15 Batch', '07:15 PM', 'Main Hall', 2500.0),
         ]
-        admin = User.query.filter_by(role='admin').first()
-        if not admin:
-            click.echo('No admin user found — run create-admin or set ADMIN_EMAIL/ADMIN_PASSWORD first.')
-            return
         for name, time, location, fee in classes:
             db.session.add(YogaClass(
-                name=name,
-                schedule_time=time,
-                location=location,
-                monthly_fee_amount=fee,
+                name=name, schedule_time=time,
+                location=location, monthly_fee_amount=fee,
                 instructor_id=admin.id,
             ))
         db.session.commit()
