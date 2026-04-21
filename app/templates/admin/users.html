@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Users — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="fw-bold mb-0"><i class="bi bi-people me-2 text-primary"></i>Users</h4>
+  <a href="{{ url_for('admin.user_new') }}" class="btn btn-primary btn-sm">
+    <i class="bi bi-person-plus"></i> New User
+  </a>
+</div>
+
+<!-- Role Filter -->
+<div class="mb-3">
+  {% for role in ['', 'admin', 'instructor', 'student'] %}
+  <a href="{{ url_for('admin.users', role=role) }}"
+     class="btn btn-sm {{ 'btn-primary' if role_filter == role else 'btn-outline-secondary' }} me-1">
+    {{ role.capitalize() if role else 'All' }}
+  </a>
+  {% endfor %}
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th class="d-none d-md-table-cell">Email</th>
+            <th class="d-none d-md-table-cell">Phone</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>
+              {% if user.profile_photo %}
+              <img src="{{ url_for('static', filename=user.profile_photo) }}" class="rounded-circle me-2" width="32" height="32" style="object-fit:cover">
+              {% else %}
+              <i class="bi bi-person-circle fs-5 me-2 text-secondary"></i>
+              {% endif %}
+              {{ user.name }}
+            </td>
+            <td class="d-none d-md-table-cell">{{ user.email }}</td>
+            <td class="d-none d-md-table-cell">{{ user.phone or '—' }}</td>
+            <td>
+              <span class="badge {{ 'bg-danger' if user.role == 'admin' else ('bg-info' if user.role == 'instructor' else 'bg-secondary') }}">
+                {{ user.role }}
+              </span>
+            </td>
+            <td>
+              {% if user.is_active %}
+              <span class="badge bg-success">Active</span>
+              {% else %}
+              <span class="badge bg-danger">Inactive</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('admin.user_edit', user_id=user.id) }}" class="btn btn-xs btn-outline-primary btn-sm me-1" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{{ url_for('admin.user_reset_link', user_id=user.id) }}" class="btn btn-sm btn-outline-warning me-1" title="Generate Reset Link">
+                <i class="bi bi-key"></i>
+              </a>
+              <form method="POST" action="{{ url_for('admin.user_toggle', user_id=user.id) }}" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-sm {{ 'btn-outline-danger' if user.is_active else 'btn-outline-success' }}"
+                        onclick="return confirm('Toggle user status?')" title="Toggle Active">
+                  <i class="bi {{ 'bi-toggle-on' if user.is_active else 'bi-toggle-off' }}"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-3">No users found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}New Task — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="d-flex align-items-center mb-3">
+      <a href="{{ url_for('instructor.tasks') }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+      <h4 class="fw-bold mb-0">New Task</h4>
+    </div>
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.title.label(class="form-label fw-semibold") }}
+            {{ form.title(class="form-control") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.description.label(class="form-label fw-semibold") }}
+            {{ form.description(class="form-control", rows=3) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.due_date.label(class="form-label fw-semibold") }}
+            {{ form.due_date(class="form-control") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.assign_to.label(class="form-label fw-semibold") }}
+            {{ form.assign_to(class="form-select", id="assign_to") }}
+          </div>
+
+          <div class="mb-3" id="class_section">
+            {{ form.class_id.label(class="form-label fw-semibold") }}
+            {{ form.class_id(class="form-select") }}
+          </div>
+
+          <div class="mb-4 d-none" id="student_section">
+            {{ form.student_id.label(class="form-label fw-semibold") }}
+            {{ form.student_id(class="form-select") }}
+          </div>
+
+          {{ form.submit(class="btn btn-primary w-100") }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const assignTo = document.getElementById('assign_to');
+  const classSection = document.getElementById('class_section');
+  const studentSection = document.getElementById('student_section');
+
+  function toggle() {
+    if (assignTo.value === 'class') {
+      classSection.classList.remove('d-none');
+      studentSection.classList.add('d-none');
+    } else {
+      classSection.classList.add('d-none');
+      studentSection.classList.remove('d-none');
+    }
+  }
+  assignTo.addEventListener('change', toggle);
+  toggle();
+</script>
+{% endblock %}

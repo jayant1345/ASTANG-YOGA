@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Session Detail — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+  <a href="{{ url_for('admin.attendance') }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h5 class="fw-bold mb-0">{{ yc.name }} — Session</h5>
+    <small class="text-muted">{{ session_obj.started_at.strftime('%d %b %Y %H:%M') }}
+    {% if session_obj.is_active %}<span class="badge bg-danger ms-1">LIVE</span>{% endif %}
+    </small>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Student</th>
+            <th>Fee Status</th>
+            <th>Attendance</th>
+            <th>Time</th>
+            <th>Override</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>
+              <strong>{{ row.student.name }}</strong><br>
+              <small class="text-muted">{{ row.student.email }}</small>
+            </td>
+            <td>
+              {% if row.fee_status %}
+                {% if row.fee_status.status == 'paid' %}
+                <span class="badge bg-success">Paid</span>
+                {% elif row.fee_status.status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+                {% else %}
+                <span class="badge bg-danger">Overdue</span>
+                {% endif %}
+              {% else %}
+              <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if row.attendance %}
+                {% if row.attendance.status == 'present' %}
+                <span class="badge bg-success">Present</span>
+                {% elif row.attendance.status == 'late' %}
+                <span class="badge bg-warning text-dark">Late</span>
+                {% else %}
+                <span class="badge bg-danger">Absent</span>
+                {% endif %}
+                {% if row.attendance.overridden_by_admin %}
+                <small class="text-muted"> (Admin)</small>
+                {% endif %}
+              {% else %}
+              <span class="badge bg-light text-dark border">Not Scanned</span>
+              {% endif %}
+            </td>
+            <td>{{ row.attendance.timestamp.strftime('%H:%M') if row.attendance else '—' }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin.attendance_mark', session_id=session_obj.id, student_id=row.student.id) }}" class="d-flex gap-1">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="status" class="form-select form-select-sm" style="width:auto">
+                  <option value="present" {{ 'selected' if row.attendance and row.attendance.status == 'present' }}>Present</option>
+                  <option value="late" {{ 'selected' if row.attendance and row.attendance.status == 'late' }}>Late</option>
+                  <option value="absent" {{ 'selected' if row.attendance and row.attendance.status == 'absent' }}>Absent</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-3">No students enrolled in this class.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

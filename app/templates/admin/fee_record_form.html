@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Record Payment — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="d-flex align-items-center mb-3">
+      <a href="{{ url_for('admin.fees') }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+      <h4 class="fw-bold mb-0">Record Fee Payment</h4>
+    </div>
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.student_id.label(class="form-label fw-semibold") }}
+            {{ form.student_id(class="form-select") }}
+            {% if form.student_id.errors %}<div class="text-danger small">{{ form.student_id.errors[0] }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.class_id.label(class="form-label fw-semibold") }}
+            {{ form.class_id(class="form-select") }}
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              {{ form.paid_for_month.label(class="form-label fw-semibold") }}
+              {{ form.paid_for_month(class="form-control", placeholder="2026-04") }}
+              {% if form.paid_for_month.errors %}<div class="text-danger small">{{ form.paid_for_month.errors[0] }}</div>{% endif %}
+            </div>
+            <div class="col-6">
+              {{ form.amount.label(class="form-label fw-semibold") }}
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                {{ form.amount(class="form-control") }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              {{ form.payment_date.label(class="form-label fw-semibold") }}
+              {{ form.payment_date(class="form-control") }}
+            </div>
+            <div class="col-6">
+              {{ form.method_note.label(class="form-label fw-semibold") }}
+              {{ form.method_note(class="form-select") }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            {{ form.remarks.label(class="form-label fw-semibold") }}
+            {{ form.remarks(class="form-control", rows=2) }}
+          </div>
+
+          {{ form.submit(class="btn btn-success w-100 btn-lg") }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

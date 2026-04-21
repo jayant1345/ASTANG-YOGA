@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Registration QR — Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-sm-8 col-md-5 text-center">
+    <h5 class="fw-bold mb-1"><i class="bi bi-qr-code me-2"></i>Student Registration QR</h5>
+    <p class="text-muted small mb-4">Display or print this QR at the studio. Students scan it to register.</p>
+
+    <div class="card border-0 shadow-sm p-3 mb-3">
+      <img src="data:image/png;base64,{{ qr_b64 }}" alt="Registration QR"
+           class="img-fluid mx-auto" style="max-width:260px; border-radius:8px">
+    </div>
+
+    <div class="input-group mb-3">
+      <input type="text" class="form-control form-control-sm" value="{{ register_url }}" id="regUrl" readonly>
+      <button class="btn btn-outline-secondary btn-sm" onclick="navigator.clipboard.writeText('{{ register_url }}');this.textContent='Copied!'">
+        Copy
+      </button>
+    </div>
+
+    <a href="{{ url_for('admin.registrations') }}" class="btn btn-outline-primary btn-sm">
+      <i class="bi bi-list-ul me-1"></i>View Registrations
+    </a>
+  </div>
+</div>
+{% endblock %}

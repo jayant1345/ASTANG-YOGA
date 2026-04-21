@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Attendance Marked — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-12 col-sm-8 col-md-5">
+    <div class="card border-0 shadow {{ 'border-success border-2' if status == 'present' else 'border-warning border-2' }}">
+      <div class="card-body text-center p-5">
+        {% if already_marked %}
+        <i class="bi bi-info-circle-fill text-info" style="font-size:4rem"></i>
+        <h4 class="fw-bold mt-3">Already Marked</h4>
+        <p class="text-muted">You are already marked <strong>{{ status }}</strong> for this session.</p>
+        {% elif status == 'present' %}
+        <i class="bi bi-check-circle-fill text-success" style="font-size:4rem"></i>
+        <h4 class="fw-bold mt-3 text-success">Attendance Marked!</h4>
+        <p class="text-muted mt-2">You are marked <strong class="text-success">Present</strong>.</p>
+        {% else %}
+        <i class="bi bi-clock-fill text-warning" style="font-size:4rem"></i>
+        <h4 class="fw-bold mt-3 text-warning">Marked Late</h4>
+        <p class="text-muted mt-2">You have been marked <strong class="text-warning">Late</strong>.</p>
+        {% endif %}
+
+        <div class="alert alert-light py-2 mb-4">
+          <strong>Class:</strong> {{ yc.name }}<br>
+          <strong>Session Started:</strong> {{ session_obj.started_at.strftime('%d %b %Y %H:%M') }}
+        </div>
+
+        <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary">
+          <i class="bi bi-house me-1"></i>Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Register — Astang Yoga{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="rounded-4 mb-4 p-3 text-white text-center"
+     style="background: linear-gradient(135deg, #2a4f26 0%, #5a9e53 100%);">
+  <i class="bi bi-flower1" style="font-size:2.5rem"></i>
+  <h4 class="fw-bold mt-2 mb-0">Join Astang Yoga</h4>
+  <p class="mb-0 opacity-75 small">Fill in your details below</p>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7 col-lg-5">
+    <div class="card shadow border-0" style="border-radius:16px">
+      <div class="card-body p-4">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.name.label(class="form-label fw-semibold small") }}
+            {{ form.name(class="form-control", placeholder="Your full name") }}
+            {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors[0] }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.email.label(class="form-label fw-semibold small") }}
+            {{ form.email(class="form-control", placeholder="you@example.com") }}
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors[0] }}</div>{% endif %}
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              {{ form.phone.label(class="form-label fw-semibold small") }}
+              {{ form.phone(class="form-control", placeholder="Mobile number") }}
+              {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors[0] }}</div>{% endif %}
+            </div>
+            <div class="col-6">
+              {{ form.dob.label(class="form-label fw-semibold small") }}
+              {{ form.dob(class="form-control") }}
+              {% if form.dob.errors %}<div class="text-danger small mt-1">{{ form.dob.errors[0] }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            {{ form.address.label(class="form-label fw-semibold small") }}
+            {{ form.address(class="form-control", rows=2, placeholder="Your address (optional)") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.class_preference.label(class="form-label fw-semibold small") }}
+            {{ form.class_preference(class="form-control", placeholder="e.g. Morning 06:15 batch") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.password.label(class="form-label fw-semibold small") }}
+            {{ form.password(class="form-control", placeholder="Min 8 characters") }}
+            {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors[0] }}</div>{% endif %}
+          </div>
+
+          <div class="mb-4">
+            {{ form.confirm_password.label(class="form-label fw-semibold small") }}
+            {{ form.confirm_password(class="form-control", placeholder="Repeat password") }}
+            {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors[0] }}</div>{% endif %}
+          </div>
+
+          {{ form.submit(class="btn btn-lg w-100 text-white fw-semibold",
+                         style="background:linear-gradient(135deg,#2a4f26,#5a9e53);border:none;border-radius:10px") }}
+        </form>
+        <p class="text-center text-muted small mt-3 mb-0">
+          Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

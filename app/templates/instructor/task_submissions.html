@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Submissions — {{ task.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+  <a href="{{ url_for('instructor.tasks') }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h5 class="fw-bold mb-0">{{ task.title }}</h5>
+    <small class="text-muted">Review submissions</small>
+  </div>
+</div>
+
+{% if submissions %}
+<div class="row g-3">
+  {% for sub in submissions %}
+  <div class="col-12 col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <strong>{{ sub.student.name }}</strong>
+          {% if sub.status == 'approved' %}
+          <span class="badge bg-success">Approved</span>
+          {% elif sub.status == 'rejected' %}
+          <span class="badge bg-danger">Rejected</span>
+          {% elif sub.status == 'submitted' %}
+          <span class="badge bg-warning text-dark">Pending Review</span>
+          {% else %}
+          <span class="badge bg-secondary">Pending</span>
+          {% endif %}
+        </div>
+        {% if sub.submitted_at %}
+        <p class="text-muted small mb-2">Submitted: {{ sub.submitted_at.strftime('%d %b %Y %H:%M') }}</p>
+        {% endif %}
+        {% if sub.proof_upload %}
+        <a href="{{ url_for('static', filename=sub.proof_upload) }}" target="_blank" class="btn btn-sm btn-outline-info mb-2">
+          <i class="bi bi-file-earmark"></i> View Proof
+        </a>
+        {% endif %}
+        {% if sub.review_comment %}
+        <p class="small text-muted border-start ps-2 mb-2">{{ sub.review_comment }}</p>
+        {% endif %}
+
+        {% if sub.status == 'submitted' %}
+        <a href="{{ url_for('instructor.task_review', task_id=task.id, student_id=sub.student_id) }}"
+           class="btn btn-sm btn-primary w-100">
+          <i class="bi bi-check2-circle"></i> Review
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No submissions yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Registration Requests — Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h5 class="fw-bold mb-0"><i class="bi bi-person-check me-2"></i>Registration Requests</h5>
+  <a href="{{ url_for('admin.registration_qr') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-qr-code me-1"></i>Show Registration QR
+  </a>
+</div>
+
+<!-- Status filter tabs -->
+<ul class="nav nav-pills mb-3">
+  {% for s in ['pending', 'approved', 'rejected'] %}
+  <li class="nav-item">
+    <a class="nav-link {{ 'active' if status_filter == s else '' }}"
+       href="{{ url_for('admin.registrations', status=s) }}">
+      {{ s.capitalize() }}
+    </a>
+  </li>
+  {% endfor %}
+  <li class="nav-item">
+    <a class="nav-link {{ 'active' if not status_filter else '' }}"
+       href="{{ url_for('admin.registrations', status='') }}">All</a>
+  </li>
+</ul>
+
+{% if reqs %}
+<div class="row g-3">
+  {% for reg in reqs %}
+  <div class="col-12 col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <strong>{{ reg.name }}</strong>
+            <span class="badge ms-2
+              {% if reg.status == 'pending' %}bg-warning text-dark
+              {% elif reg.status == 'approved' %}bg-success
+              {% else %}bg-danger{% endif %}">
+              {{ reg.status }}
+            </span>
+          </div>
+          <small class="text-muted">{{ reg.created_at.strftime('%d %b %Y') }}</small>
+        </div>
+        <p class="mb-1 small"><i class="bi bi-envelope me-1 text-muted"></i>{{ reg.email }}</p>
+        <p class="mb-1 small"><i class="bi bi-phone me-1 text-muted"></i>{{ reg.phone or '—' }}</p>
+        <p class="mb-1 small">
+          <i class="bi bi-calendar me-1 text-muted"></i>DOB: {{ reg.dob.strftime('%d %b %Y') }}
+          <span class="text-muted ms-2">(Age: {{ ((reg.created_at.date() - reg.dob).days // 365) }})</span>
+        </p>
+        {% if reg.class_preference %}
+        <p class="mb-1 small"><i class="bi bi-clock me-1 text-muted"></i>Preferred: {{ reg.class_preference }}</p>
+        {% endif %}
+        {% if reg.address %}
+        <p class="mb-2 small text-muted">{{ reg.address }}</p>
+        {% endif %}
+
+        {% if reg.status == 'pending' %}
+        <div class="d-flex gap-2 mt-3">
+          <form method="POST" action="{{ url_for('admin.registration_approve', req_id=reg.id) }}" class="d-inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-success btn-sm">
+              <i class="bi bi-check-lg me-1"></i>Approve
+            </button>
+          </form>
+          <button class="btn btn-outline-danger btn-sm" data-bs-toggle="collapse"
+                  data-bs-target="#reject-{{ reg.id }}">
+            <i class="bi bi-x-lg me-1"></i>Reject
+          </button>
+        </div>
+        <div class="collapse mt-2" id="reject-{{ reg.id }}">
+          <form method="POST" action="{{ url_for('admin.registration_reject', req_id=reg.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="input-group input-group-sm">
+              <input type="text" name="reason" class="form-control" placeholder="Reason (optional)">
+              <button type="submit" class="btn btn-danger">Confirm Reject</button>
+            </div>
+          </form>
+        </div>
+
+        {% elif reg.status == 'rejected' and reg.reject_reason %}
+        <p class="small text-danger mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>{{ reg.reject_reason }}</p>
+        {% elif reg.status == 'approved' %}
+        <p class="small text-success mt-2 mb-0">
+          <i class="bi bi-check-circle me-1"></i>Approved by {{ reg.reviewed_by.name if reg.reviewed_by else '—' }}
+          on {{ reg.reviewed_at.strftime('%d %b %Y') if reg.reviewed_at else '—' }}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="bi bi-inbox fs-1 d-block mb-2"></i>No {{ status_filter }} requests.
+</div>
+{% endif %}
+{% endblock %}

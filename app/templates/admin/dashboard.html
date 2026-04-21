@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Astang Yoga{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h4>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-people text-primary" style="font-size:2rem"></i>
+        <h2 class="fw-bold mt-1">{{ total_students }}</h2>
+        <p class="text-muted mb-0 small">Active Students</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-check2-circle text-success" style="font-size:2rem"></i>
+        <h2 class="fw-bold mt-1">{{ attendance_pct }}%</h2>
+        <p class="text-muted mb-0 small">Today's Attendance</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-cash-stack text-warning" style="font-size:2rem"></i>
+        <h2 class="fw-bold mt-1">₹{{ "{:,.0f}".format(total_fee_collected) }}</h2>
+        <p class="text-muted mb-0 small">Total Fee Collected</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Active Sessions -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white fw-semibold">
+    <i class="bi bi-broadcast text-danger me-2"></i>Live Sessions
+  </div>
+  <div class="card-body p-0">
+    {% if active_sessions %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr><th>Class</th><th>Instructor</th><th>Started</th><th>Present</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for s in active_sessions %}
+          <tr>
+            <td>{{ s.yoga_class.name }}</td>
+            <td>{{ s.instructor.name }}</td>
+            <td>{{ s.started_at.strftime('%H:%M') }}</td>
+            <td><span class="badge bg-success">{{ s.attendances.count() }}</span></td>
+            <td>
+              <a href="{{ url_for('instructor.session_live', session_id=s.id) }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i> View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-3 mb-0">No active sessions right now.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Pending Registrations alert -->
+{% if pending_registrations %}
+<div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+  <i class="bi bi-person-exclamation fs-5 me-2"></i>
+  <div>
+    <strong>{{ pending_registrations }} pending registration{{ 's' if pending_registrations > 1 else '' }}</strong> awaiting your approval.
+    <a href="{{ url_for('admin.registrations') }}" class="alert-link ms-2">Review now →</a>
+  </div>
+</div>
+{% endif %}
+
+<!-- Quick Links -->
+<div class="row g-3">
+  <div class="col-6 col-md-3">
+    <a href="{{ url_for('admin.registrations') }}" class="btn btn-outline-primary w-100 py-3 position-relative">
+      <i class="bi bi-person-check d-block fs-4 mb-1"></i>Registrations
+      {% if pending_registrations %}
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ pending_registrations }}</span>
+      {% endif %}
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{{ url_for('admin.fee_record') }}" class="btn btn-outline-warning w-100 py-3">
+      <i class="bi bi-cash d-block fs-4 mb-1"></i>Record Fee
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{{ url_for('admin.fees') }}?status=overdue" class="btn btn-outline-danger w-100 py-3">
+      <i class="bi bi-exclamation-triangle d-block fs-4 mb-1"></i>Defaulters
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="{{ url_for('admin.registration_qr') }}" class="btn btn-outline-success w-100 py-3">
+      <i class="bi bi-qr-code d-block fs-4 mb-1"></i>Reg. QR
+    </a>
+  </div>
+</div>
+{% endblock %}

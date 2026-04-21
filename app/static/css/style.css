@@ -1,0 +1,170 @@
+/* Astang Yoga — Custom Styles */
+
+:root {
+  --yoga-saffron:     #d4640a;
+  --yoga-saffron-lt:  #f0913a;
+  --yoga-saffron-dk:  #a34c06;
+  --yoga-green:       #3a6b35;
+  --yoga-green-dark:  #2a4f26;
+  --yoga-maroon:      #7b1f1f;
+  --yoga-brown:       #795548;
+  --yoga-tan:         #d7c4a8;
+  --yoga-cream:       #fdf8f2;
+}
+
+/* Lotus mandala tile — subtle on cream */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--yoga-cream) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23d4640a' stroke-opacity='0.06' stroke-width='1'%3E%3Ccircle cx='70' cy='70' r='58'/%3E%3Ccircle cx='70' cy='70' r='38'/%3E%3Ccircle cx='70' cy='70' r='18'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(0 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(40 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(80 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(120 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(160 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(200 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(240 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(280 70 70)'/%3E%3Cellipse cx='70' cy='24' rx='10' ry='20' transform='rotate(320 70 70)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 140px 140px;
+}
+
+/* ── Navbar ─────────────────────────────────────────── */
+.navbar.navbar-yoga {
+  background: linear-gradient(90deg, #5a2d00 0%, #a34c06 60%, #c96012 100%) !important;
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.navbar.navbar-yoga .navbar-brand {
+  font-size: 1.2rem;
+  letter-spacing: .04em;
+}
+
+.navbar.navbar-yoga .nav-link:hover,
+.navbar.navbar-yoga .nav-link.active {
+  color: #ffe0a0 !important;
+}
+
+/* ── Bootstrap primary override → saffron ───────────── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--yoga-saffron-dk), var(--yoga-saffron-lt)) !important;
+  border-color: var(--yoga-saffron-dk) !important;
+  color: #fff !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: linear-gradient(135deg, #8a3f04, #e07830) !important;
+  box-shadow: 0 4px 12px rgba(212,100,10,.35) !important;
+}
+
+.btn-outline-primary {
+  color: var(--yoga-saffron-dk) !important;
+  border-color: var(--yoga-saffron-dk) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--yoga-saffron-dk) !important;
+  color: #fff !important;
+}
+
+/* ── Cards ───────────────────────────────────────────── */
+.card {
+  border-radius: 14px;
+}
+
+.card-header.bg-saffron {
+  background: linear-gradient(90deg, var(--yoga-saffron-dk), var(--yoga-saffron-lt)) !important;
+  color: white;
+}
+
+/* ── Big action buttons on student home ─────────────── */
+.action-btn-card {
+  border-radius: 18px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: none;
+}
+
+.action-btn-card:hover, .action-btn-card:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.15) !important;
+}
+
+/* ── QR reader ──────────────────────────────────────── */
+#qr-reader {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Bottom nav (mobile students) ──────────────────── */
+.bottom-nav {
+  height: 58px;
+  z-index: 1030;
+  background-color: #fff;
+}
+
+.bottom-nav a {
+  flex: 1;
+  padding: 4px 0;
+  font-size: 0.7rem;
+  color: var(--yoga-brown);
+}
+
+.bottom-nav a.active-nav {
+  color: var(--yoga-saffron);
+}
+
+/* ── Utilities ──────────────────────────────────────── */
+.border-4 { border-width: 4px !important; }
+.card.border-start { border-left-width: 4px !important; }
+
+/* ── Mobile table ───────────────────────────────────── */
+@media (max-width: 576px) {
+  .table th, .table td { font-size: 0.82rem; padding: 0.4rem 0.5rem; }
+  h4 { font-size: 1.1rem; }
+}
+
+/* ── Sticky navbar ──────────────────────────────────── */
+.navbar { z-index: 1040; }
+
+/* ── Toast container ────────────────────────────────── */
+.toast-container { z-index: 1090; }
+
+/* ── Login hero ─────────────────────────────────────── */
+.yoga-hero {
+  background: linear-gradient(150deg, #5a2d00 0%, #a34c06 45%, #c96012 75%, #e8a24a 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 40px rgba(90,45,0,0.35);
+}
+
+.yoga-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  border: 40px solid rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+
+.yoga-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -70px; left: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  border: 32px solid rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+
+.om-symbol {
+  font-size: 3.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  color: rgba(255,255,255,0.9);
+}
+
+/* ── Saffron badge ──────────────────────────────────── */
+.badge.bg-saffron {
+  background-color: var(--yoga-saffron) !important;
+  color: white;
+}
+
+/* ── Section divider ────────────────────────────────── */
+.divider-saffron {
+  border-color: var(--yoga-saffron);
+  opacity: .3;
+}

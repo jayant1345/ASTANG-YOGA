@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Fee Management — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0"><i class="bi bi-cash-stack me-2 text-primary"></i>Fee Management</h4>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('admin.fee_record') }}" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-lg"></i> Record Payment
+    </a>
+    <a href="{{ url_for('admin.fees_export') }}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-download"></i> Export CSV
+    </a>
+  </div>
+</div>
+
+<!-- Filters -->
+<form method="GET" class="row g-2 mb-4">
+  <div class="col-6 col-md-3">
+    <select name="class_id" class="form-select form-select-sm">
+      <option value="">All Classes</option>
+      {% for cls in classes %}
+      <option value="{{ cls.id }}" {{ 'selected' if class_filter == cls.id }}>{{ cls.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-6 col-md-3">
+    <select name="status" class="form-select form-select-sm">
+      <option value="">All Status</option>
+      <option value="paid" {{ 'selected' if status_filter == 'paid' }}>Paid</option>
+      <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+      <option value="overdue" {{ 'selected' if status_filter == 'overdue' }}>Overdue</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-sm btn-outline-primary">Filter</button>
+    <a href="{{ url_for('admin.fees') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+  </div>
+</form>
+
+<!-- Defaulters Table -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white fw-semibold">Fee Status by Student</div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Status</th>
+            <th>Due Month</th>
+            <th>Amount</th>
+            <th>Days Overdue</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in defaulters %}
+          {% set fs = item.fee_status %}
+          <tr>
+            <td>{{ item.student.name }}</td>
+            <td>{{ fs.class_name }}</td>
+            <td>
+              {% if fs.status == 'paid' %}
+              <span class="badge bg-success">Paid</span>
+              {% elif fs.status == 'pending' %}
+              <span class="badge bg-warning text-dark">Pending</span>
+              {% else %}
+              <span class="badge bg-danger">Overdue</span>
+              {% endif %}
+            </td>
+            <td>{{ fs.due_month_display or '—' }}</td>
+            <td>₹{{ "{:,.0f}".format(fs.amount) }}</td>
+            <td>{{ fs.days_overdue if fs.days_overdue else '—' }}</td>
+            <td>
+              <a href="{{ url_for('admin.fee_record') }}?student_id={{ item.student.id }}&class_id={{ fs.class_id }}"
+                 class="btn btn-sm btn-outline-success">
+                <i class="bi bi-plus-lg"></i> Record
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" class="text-center text-muted py-3">No results.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Records -->
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white fw-semibold">Recent Payments</div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr><th>Student</th><th>Class</th><th>Month</th><th>Amount</th><th>Method</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>{{ r.student.name }}</td>
+            <td>{{ r.yoga_class.name }}</td>
+            <td>{{ r.paid_for_month }}</td>
+            <td>₹{{ "{:,.0f}".format(r.amount) }}</td>
+            <td><span class="badge bg-light text-dark border">{{ r.method_note }}</span></td>
+            <td>{{ r.payment_date }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-3">No payments recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

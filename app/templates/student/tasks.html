@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}My Tasks — Astang Yoga{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-list-task me-2 text-primary"></i>My Tasks</h4>
+
+{% if task_data %}
+<div class="row g-3">
+  {% for item in task_data %}
+  {% set task = item.task %}
+  {% set sub = item.submission %}
+  <div class="col-12 col-md-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <h6 class="fw-bold mb-0">{{ task.title }}</h6>
+          {% if sub %}
+            {% if sub.status == 'approved' %}
+            <span class="badge bg-success">Approved</span>
+            {% elif sub.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+            {% elif sub.status == 'submitted' %}
+            <span class="badge bg-info text-dark">Under Review</span>
+            {% else %}
+            <span class="badge bg-warning text-dark">Pending</span>
+            {% endif %}
+          {% else %}
+          <span class="badge bg-warning text-dark">Pending</span>
+          {% endif %}
+        </div>
+
+        {% if task.due_date %}
+        <p class="small text-muted mb-1">
+          <i class="bi bi-calendar me-1"></i>Due: {{ task.due_date.strftime('%d %b %Y') }}
+          {% if task.due_date < today %}<span class="text-danger ms-1">(Overdue)</span>{% endif %}
+        </p>
+        {% endif %}
+
+        {% if task.description %}
+        <p class="small text-secondary mb-2">{{ task.description[:150] }}{% if task.description|length > 150 %}…{% endif %}</p>
+        {% endif %}
+
+        <p class="small text-muted mb-2">
+          <i class="bi bi-person me-1"></i>Assigned by {{ task.assigned_by.name }}
+        </p>
+
+        {% if sub and sub.review_comment %}
+        <div class="alert alert-light border-start border-4 {{ 'border-success' if sub.status == 'approved' else 'border-danger' }} py-2 px-3 small mb-2">
+          <strong>Feedback:</strong> {{ sub.review_comment }}
+        </div>
+        {% endif %}
+
+        {% if sub and sub.proof_upload %}
+        <a href="{{ url_for('static', filename=sub.proof_upload) }}" target="_blank"
+           class="btn btn-sm btn-outline-info mb-2">
+          <i class="bi bi-file-earmark"></i> View Uploaded Proof
+        </a>
+        {% endif %}
+
+        {% if not sub or sub.status in ('pending', 'rejected') %}
+        <form method="POST" action="{{ url_for('student.task_submit', task_id=task.id) }}"
+              enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Upload Proof (optional)</label>
+            <input type="file" name="proof" class="form-control form-control-sm"
+                   accept="image/*,video/*">
+          </div>
+          <button type="submit" class="btn btn-sm btn-success w-100">
+            <i class="bi bi-send"></i>
+            {{ 'Resubmit' if sub and sub.status == 'rejected' else 'Mark as Done' }}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-check2-all fs-1 text-success"></i>
+  <p class="mt-2">No tasks assigned to you right now. Great job!</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Pass today's date to template
+  const today = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

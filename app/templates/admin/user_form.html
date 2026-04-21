@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Astang Yoga{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="d-flex align-items-center mb-3">
+      <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+      <h4 class="fw-bold mb-0">{{ title }}</h4>
+    </div>
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.name.label(class="form-label fw-semibold") }}
+            {{ form.name(class="form-control") }}
+            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors[0] }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.email.label(class="form-label fw-semibold") }}
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors[0] }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.phone.label(class="form-label fw-semibold") }}
+            {{ form.phone(class="form-control", placeholder="+91 XXXXX XXXXX") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.role.label(class="form-label fw-semibold") }}
+            {{ form.role(class="form-select") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.password.label(class="form-label fw-semibold") }}
+            {{ form.password(class="form-control", autocomplete="new-password") }}
+            {% if user is defined %}<div class="form-text">Leave blank to keep existing password.</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.profile_photo.label(class="form-label fw-semibold") }}
+            {{ form.profile_photo(class="form-control") }}
+            {% if user is defined and user.profile_photo %}
+            <img src="{{ url_for('static', filename=user.profile_photo) }}" class="mt-2 rounded" height="60">
+            {% endif %}
+          </div>
+
+          <div class="mb-4 form-check">
+            {{ form.is_active(class="form-check-input") }}
+            {{ form.is_active.label(class="form-check-label") }}
+          </div>
+
+          {{ form.submit(class="btn btn-primary w-100") }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
