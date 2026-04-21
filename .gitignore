@@ -1,0 +1,28 @@
+# Environment
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+instance/
+*.db
+*.sqlite3
+
+# Uploads (user files — not committed)
+app/static/uploads/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db

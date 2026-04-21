@@ -6,7 +6,10 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///astang_yoga.db'
+
+    # Railway provides postgres:// but SQLAlchemy requires postgresql://
+    _db_url = os.environ.get('DATABASE_URL') or 'sqlite:///astang_yoga.db'
+    SQLALCHEMY_DATABASE_URI = _db_url.replace('postgres://', 'postgresql://', 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     GRACE_PERIOD_DAYS = int(os.environ.get('GRACE_PERIOD_DAYS', 5))
     SESSION_TIMEOUT_MINUTES = int(os.environ.get('SESSION_TIMEOUT_MINUTES', 15))
