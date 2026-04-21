@@ -9,7 +9,8 @@ class Config:
 
     # Railway provides postgres:// but SQLAlchemy requires postgresql://
     _db_url = os.environ.get('DATABASE_URL') or 'sqlite:///astang_yoga.db'
-    SQLALCHEMY_DATABASE_URI = _db_url.replace('postgres://', 'postgresql://', 1)
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = _db_url.replace('postgresql://', 'postgresql+pg8000://', 1) if 'postgresql' in _db_url else _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     GRACE_PERIOD_DAYS = int(os.environ.get('GRACE_PERIOD_DAYS', 5))
     SESSION_TIMEOUT_MINUTES = int(os.environ.get('SESSION_TIMEOUT_MINUTES', 15))
