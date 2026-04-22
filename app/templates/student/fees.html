@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}My Payments — Ashtang Yoga School{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-3">
+  <a href="{{ url_for('student.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <h5 class="fw-bold mb-0">My Payment Details</h5>
+</div>
+
+<!-- Current Fee Status -->
+{% if fee_statuses %}
+<h6 class="fw-semibold text-muted text-uppercase mb-2" style="font-size:.72rem; letter-spacing:.05em">Current Status</h6>
+<div class="row g-2 mb-4">
+  {% for fs in fee_statuses %}{% if fs %}
+  <div class="col-12 col-md-6">
+    <div class="card border-0 shadow-sm
+      {% if fs.status == 'paid' %}border-start border-success border-4
+      {% elif fs.status == 'pending' %}border-start border-warning border-4
+      {% else %}border-start border-danger border-4{% endif %}">
+      <div class="card-body py-2 px-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong class="small">{{ fs.class_name }}</strong>
+            {% if fs.status == 'paid' %}
+            <br><small class="text-success"><i class="bi bi-check-circle me-1"></i>Paid — this month</small>
+            {% elif fs.status == 'pending' %}
+            <br><small class="text-warning"><i class="bi bi-hourglass me-1"></i>Due {{ fs.due_month_display }}</small>
+            {% else %}
+            <br><small class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>Overdue — {{ fs.due_month_display }}</small>
+            {% endif %}
+          </div>
+          <div class="text-end">
+            <span class="fw-bold">₹{{ "{:,.0f}".format(fs.amount) }}/mo</span>
+            {% if fs.status == 'overdue' %}
+            <br><small class="text-danger">{{ fs.days_overdue }}d overdue</small>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}{% endfor %}
+</div>
+{% endif %}
+
+<!-- Summary Card -->
+<div class="card border-0 shadow-sm mb-4" style="background:linear-gradient(135deg,#5a2d00,#c96012); color:white;">
+  <div class="card-body py-3 px-4 d-flex justify-content-between align-items-center">
+    <div>
+      <div class="small opacity-75">Total Paid (All Time)</div>
+      <div class="fw-bold" style="font-size:1.6rem">₹{{ "{:,.0f}".format(total_paid) }}</div>
+    </div>
+    <div class="text-end">
+      <div class="small opacity-75">Total Payments</div>
+      <div class="fw-bold" style="font-size:1.6rem">{{ records|length }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment History -->
+<h6 class="fw-semibold text-muted text-uppercase mb-2" style="font-size:.72rem; letter-spacing:.05em">Payment History</h6>
+
+{% if records %}
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Month</th>
+            <th>Class</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>
+              <span class="badge bg-success-subtle text-success-emphasis fw-semibold" style="font-size:.8rem">
+                {{ r.paid_for_month }}
+              </span>
+            </td>
+            <td class="small fw-semibold">{{ r.yoga_class.name }}</td>
+            <td class="fw-bold">₹{{ "{:,.0f}".format(r.amount) }}</td>
+            <td class="small text-muted">
+              {% if r.payment_date %}{{ r.payment_date.strftime('%d %b %Y') }}{% else %}—{% endif %}
+            </td>
+            <td>
+              {% if r.method_note %}
+              <span class="badge bg-light text-dark border">{{ r.method_note }}</span>
+              {% else %}
+              <span class="text-muted small">—</span>
+              {% endif %}
+              {% if r.remarks %}
+              <br><small class="text-muted">{{ r.remarks }}</small>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="bi bi-receipt" style="font-size:2.5rem; opacity:.3"></i>
+  <p class="mt-2 mb-0">No payment records yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}

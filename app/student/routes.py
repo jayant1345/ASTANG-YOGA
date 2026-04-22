@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from app import db
 from app.student import bp
-from app.models import Task, TaskSubmission, StudentClass, YogaClass, Attendance, ClassSession, CarouselSlide
+from app.models import Task, TaskSubmission, StudentClass, YogaClass, Attendance, ClassSession, CarouselSlide, FeeRecord
 from app.decorators import student_required
 from app.utils import save_upload, allowed_file
 
@@ -47,6 +47,22 @@ def dashboard():
                            enrolled_classes=enrolled_classes,
                            slides=slides,
                            total_attendance=total_attendance)
+
+
+@bp.route('/fees')
+@login_required
+@student_required
+def fees():
+    records = (FeeRecord.query
+               .filter_by(student_id=current_user.id)
+               .order_by(FeeRecord.paid_for_month.desc(), FeeRecord.payment_date.desc())
+               .all())
+    fee_statuses = current_user.get_all_fee_statuses()
+    total_paid = sum(r.amount for r in records)
+    return render_template('student/fees.html',
+                           records=records,
+                           fee_statuses=fee_statuses,
+                           total_paid=total_paid)
 
 
 @bp.route('/tasks')

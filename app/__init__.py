@@ -45,6 +45,11 @@ def create_app():
             flash('Your account has been deactivated. Contact admin.', 'danger')
             return redirect(url_for('auth.login'))
 
+    @app.route('/login')
+    def login_redirect():
+        from flask import redirect, url_for
+        return redirect(url_for('auth.login'))
+
     @app.route('/')
     def index():
         from flask import redirect, url_for

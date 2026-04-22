@@ -185,28 +185,37 @@
 
 <!-- Action buttons -->
 <div class="row g-3 mb-4">
-  <div class="col-6">
+  <div class="col-4">
     <a href="{{ url_for('attendance.scan') }}"
        class="action-btn-card card shadow text-decoration-none text-center {{ 'opacity-50 pe-none' if has_overdue else '' }}"
        style="background:linear-gradient(135deg,#d4640a,#f0913a); color:white;">
-      <div class="card-body py-4">
-        <i class="bi bi-qr-code-scan" style="font-size:2.8rem"></i>
-        <p class="fw-bold mt-2 mb-0">Scan QR</p>
-        {% if has_overdue %}<small class="opacity-75">Blocked — fees overdue</small>{% endif %}
+      <div class="card-body py-3">
+        <i class="bi bi-qr-code-scan" style="font-size:2.2rem"></i>
+        <p class="fw-bold mt-2 mb-0 small">Scan QR</p>
+        {% if has_overdue %}<small class="opacity-75" style="font-size:.65rem">Blocked</small>{% endif %}
       </div>
     </a>
   </div>
-  <div class="col-6">
+  <div class="col-4">
     <a href="{{ url_for('student.tasks') }}"
        class="action-btn-card card shadow text-decoration-none text-center"
        style="background:linear-gradient(135deg,#795548,#a1745c); color:white;">
-      <div class="card-body py-4">
-        <i class="bi bi-list-task" style="font-size:2.8rem"></i>
+      <div class="card-body py-3">
+        <i class="bi bi-list-task" style="font-size:2.2rem"></i>
         {% if pending_count %}
-        <span class="badge bg-warning text-dark ms-1" style="position:relative;top:-10px;font-size:.7rem">{{ pending_count }}</span>
+        <span class="badge bg-warning text-dark ms-1" style="position:relative;top:-8px;font-size:.65rem">{{ pending_count }}</span>
         {% endif %}
-        <p class="fw-bold mt-2 mb-0">My Tasks</p>
-        {% if pending_count %}<small class="opacity-75">{{ pending_count }} pending</small>{% endif %}
+        <p class="fw-bold mt-2 mb-0 small">My Tasks</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-4">
+    <a href="{{ url_for('student.fees') }}"
+       class="action-btn-card card shadow text-decoration-none text-center"
+       style="background:linear-gradient(135deg,#1565c0,#1e88e5); color:white;">
+      <div class="card-body py-3">
+        <i class="bi bi-receipt" style="font-size:2.2rem"></i>
+        <p class="fw-bold mt-2 mb-0 small">Payments</p>
       </div>
     </a>
   </div>
