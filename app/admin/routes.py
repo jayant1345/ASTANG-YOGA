@@ -201,6 +201,20 @@ def class_edit(class_id):
     return render_template('admin/class_form.html', form=form, title='Edit Class', yc=yc)
 
 
+@bp.route('/classes/<int:class_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def class_delete(class_id):
+    yc = YogaClass.query.get_or_404(class_id)
+    if yc.enrollments.filter_by(is_active=True).count() > 0:
+        flash('Cannot delete a class with active enrolled students.', 'danger')
+        return redirect(url_for('admin.classes'))
+    db.session.delete(yc)
+    db.session.commit()
+    flash(f'Class "{yc.name}" deleted.', 'success')
+    return redirect(url_for('admin.classes'))
+
+
 @bp.route('/classes/<int:class_id>/enroll', methods=['GET', 'POST'])
 @login_required
 @admin_required
