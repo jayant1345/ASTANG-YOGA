@@ -14,9 +14,31 @@
     </div>
 
     <p class="text-muted small mb-3">This QR is permanent for this class batch.</p>
+
+    <div class="input-group mb-3">
+      <input type="text" class="form-control form-control-sm" value="{{ verify_url }}" id="attendUrl" readonly>
+      <button class="btn btn-outline-secondary btn-sm"
+              onclick="navigator.clipboard.writeText('{{ verify_url }}');this.textContent='Copied!'">
+        <i class="bi bi-clipboard"></i> Copy
+      </button>
+    </div>
+
+    <button onclick="shareWhatsApp('Ashtang Yoga School — {{ yc.name }} attendance link:\n{{ verify_url }}')"
+            class="btn btn-success w-100 mb-2">
+      <i class="bi bi-whatsapp me-2"></i>Share on WhatsApp
+    </button>
+
     <a href="{{ url_for('admin.classes') }}" class="btn btn-outline-primary btn-sm">
       <i class="bi bi-arrow-left me-1"></i>Back to Classes
     </a>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function shareWhatsApp(text) {
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+</script>
 {% endblock %}

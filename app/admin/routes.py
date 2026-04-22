@@ -48,13 +48,19 @@ def dashboard():
 
     active_sessions = ClassSession.query.filter_by(is_active=True).all()
 
+    slides = (CarouselSlide.query
+              .filter_by(is_active=True)
+              .order_by(CarouselSlide.slide_order, CarouselSlide.id)
+              .limit(5).all())
+
     return render_template('admin/dashboard.html',
                            total_students=total_students,
                            attendance_pct=attendance_pct,
                            total_fee_collected=total_fee_collected,
                            active_sessions=active_sessions,
                            pending_registrations=pending_registrations,
-                           today=today)
+                           today=today,
+                           slides=slides)
 
 
 # ── User Management ──────────────────────────────────────────────────────────
@@ -553,7 +559,7 @@ def class_qr(class_id):
     class_token = generate_class_token(yc.id)
     verify_url = url_for('attendance.verify', class_token=class_token, _external=True)
     qr_b64 = generate_qr_b64(verify_url)
-    return render_template('admin/class_qr.html', yc=yc, qr_b64=qr_b64)
+    return render_template('admin/class_qr.html', yc=yc, qr_b64=qr_b64, verify_url=verify_url)
 
 
 # ── Carousel Slides ───────────────────────────────────────────────────────────

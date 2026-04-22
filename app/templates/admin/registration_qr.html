@@ -19,9 +19,22 @@
       </button>
     </div>
 
+    <button onclick="shareWhatsApp('Ashtang Yoga School — Register as a student:\n{{ register_url }}')"
+            class="btn btn-success w-100 mb-2">
+      <i class="bi bi-whatsapp me-2"></i>Share Registration Link on WhatsApp
+    </button>
+
     <a href="{{ url_for('admin.registrations') }}" class="btn btn-outline-primary btn-sm">
       <i class="bi bi-list-ul me-1"></i>View Registrations
     </a>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function shareWhatsApp(text) {
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+</script>
 {% endblock %}

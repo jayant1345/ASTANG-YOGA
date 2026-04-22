@@ -2,7 +2,45 @@
 {% block title %}Admin Dashboard — Ashtang Yoga School{% endblock %}
 
 {% block content %}
-<h4 class="fw-bold mb-4"><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h4>
+<h4 class="fw-bold mb-3"><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h4>
+
+{% if slides %}
+<div id="adminCarousel" class="carousel slide mb-4 rounded shadow-sm overflow-hidden" data-bs-ride="carousel" data-bs-interval="4500">
+  <div class="carousel-indicators">
+    {% for slide in slides %}
+    <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="{{ loop.index0 }}"
+            {% if loop.first %}class="active"{% endif %}></button>
+    {% endfor %}
+  </div>
+  <div class="carousel-inner">
+    {% for slide in slides %}
+    <div class="carousel-item {% if loop.first %}active{% endif %}">
+      {% if slide.image_path %}
+      <img src="{{ url_for('static', filename=slide.image_path) }}"
+           class="d-block w-100" style="height:200px; object-fit:cover;" alt="{{ slide.title }}">
+      {% else %}
+      <div class="d-flex align-items-center justify-content-center"
+           style="height:200px; background:linear-gradient(135deg,#5a2d00,#c96012);">
+        <span style="font-size:4rem; opacity:.5; color:white;">ॐ</span>
+      </div>
+      {% endif %}
+      <div class="carousel-caption d-block" style="background:rgba(0,0,0,0.45); border-radius:8px; bottom:12px; padding:8px 14px;">
+        <h6 class="fw-bold mb-0" style="font-size:.95rem">{{ slide.title }}</h6>
+        {% if slide.body %}<p class="mb-0 small opacity-85">{{ slide.body }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% if slides|length > 1 %}
+  <button class="carousel-control-prev" type="button" data-bs-target="#adminCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#adminCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+  {% endif %}
+</div>
+{% endif %}
 
 <!-- KPI Cards -->
 <div class="row g-3 mb-4">

@@ -34,11 +34,15 @@
         </p>
         <span class="badge bg-success fs-6">{{ session_obj.attendances.count() }} scanned</span>
       </div>
-      <div class="card-footer bg-white border-0">
+      <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
         <a href="{{ url_for('attendance.class_display', class_id=yc.id) }}" target="_blank"
            class="btn btn-success btn-sm w-100">
           <i class="bi bi-tv me-1"></i>Open on Display / Tablet
         </a>
+        <button onclick="shareWhatsApp('Ashtang Yoga School — {{ yc.name }} attendance link:\n{{ verify_url }}')"
+                class="btn btn-sm w-100" style="background:#25D366; color:white;">
+          <i class="bi bi-whatsapp me-1"></i>Share on WhatsApp
+        </button>
       </div>
     </div>
   </div>
@@ -107,7 +111,9 @@
 
 {% block scripts %}
 <script>
-  // Auto-refresh attendance every 20 seconds
   setTimeout(() => location.reload(), 20000);
+  function shareWhatsApp(text) {
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
 </script>
 {% endblock %}
