@@ -1,3 +1,82 @@
+<style>
+#adminCarousel {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+}
+.carousel-item {
+    height: 420px;
+    position: relative;
+    overflow: hidden;
+    background: #222;
+}
+.carousel-bg {
+    position: absolute;
+    inset: -20px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(18px);
+    opacity: 0.55;
+    transform: scale(1.08);
+}
+.carousel-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+.carousel-img-group {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+.carousel-img-slot {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+}
+.carousel-img-slot + .carousel-img-slot {
+    border-left: 2px solid rgba(255,255,255,0.25);
+}
+.carousel-img-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.carousel-caption-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+    padding: 48px 24px 18px;
+    text-align: center;
+    z-index: 2;
+}
+.carousel-caption-overlay h5 {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+.carousel-caption-overlay p {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.85rem;
+    margin: 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.carousel-img-slot .carousel-caption-overlay {
+    padding: 28px 8px 10px;
+}
+.carousel-img-slot .carousel-caption-overlay h5 {
+    font-size: 0.82rem;
+}
+.carousel-img-slot .carousel-caption-overlay p {
+    font-size: 0.72rem;
+}
+</style>
 {% extends "base.html" %}
 {% block title %}Admin Dashboard — Ashtang Yoga School{% endblock %}
 
@@ -5,33 +84,58 @@
 <h4 class="fw-bold mb-3"><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h4>
 
 {% if slides %}
-<div id="adminCarousel" class="carousel slide mb-4 rounded shadow-sm overflow-hidden" data-bs-ride="carousel" data-bs-interval="4500">
+<div id="adminCarousel" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="7500">
   <div class="carousel-indicators">
-    {% for slide in slides %}
+    {% for i in range(0, slides|length, 3) %}
     <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="{{ loop.index0 }}"
             {% if loop.first %}class="active"{% endif %}></button>
     {% endfor %}
   </div>
   <div class="carousel-inner">
-    {% for slide in slides %}
+    {% for i in range(0, slides|length, 3) %}
+    {% set group = slides[i:i+3] %}
     <div class="carousel-item {% if loop.first %}active{% endif %}">
-      {% if slide.image_path %}
-      <img src="{{ url_for('static', filename=slide.image_path) }}"
-           class="d-block w-100" style="height:200px; object-fit:cover;" alt="{{ slide.title }}">
+      {% if group|length == 1 %}
+        {% set slide = group[0] %}
+        {% if slide.image_path %}
+        <div class="carousel-bg" style="background-image:url('{{ url_for('static', filename=slide.image_path) }}')"></div>
+        <img src="{{ url_for('static', filename=slide.image_path) }}"
+             class="carousel-img"
+             alt="{{ slide.title }}">
+        {% else %}
+        <div class="d-flex align-items-center justify-content-center h-100"
+             style="background:linear-gradient(135deg,#5a2d00,#c96012);">
+          <span style="font-size:5rem; opacity:.4; color:white;">ॐ</span>
+        </div>
+        {% endif %}
+        <div class="carousel-caption-overlay">
+          <h5>{{ slide.title }}</h5>
+          {% if slide.body %}<p>{{ slide.body }}</p>{% endif %}
+        </div>
       {% else %}
-      <div class="d-flex align-items-center justify-content-center"
-           style="height:200px; background:linear-gradient(135deg,#5a2d00,#c96012);">
-        <span style="font-size:4rem; opacity:.5; color:white;">ॐ</span>
-      </div>
+        <div class="carousel-img-group">
+          {% for slide in group %}
+          <div class="carousel-img-slot">
+            {% if slide.image_path %}
+            <img src="{{ url_for('static', filename=slide.image_path) }}" alt="{{ slide.title }}">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center h-100"
+                 style="background:linear-gradient(135deg,#5a2d00,#c96012);">
+              <span style="font-size:3rem; opacity:.4; color:white;">ॐ</span>
+            </div>
+            {% endif %}
+            <div class="carousel-caption-overlay">
+              <h5>{{ slide.title }}</h5>
+              {% if slide.body %}<p>{{ slide.body }}</p>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       {% endif %}
-      <div class="carousel-caption d-block" style="background:rgba(0,0,0,0.45); border-radius:8px; bottom:12px; padding:8px 14px;">
-        <h6 class="fw-bold mb-0" style="font-size:.95rem">{{ slide.title }}</h6>
-        {% if slide.body %}<p class="mb-0 small opacity-85">{{ slide.body }}</p>{% endif %}
-      </div>
     </div>
     {% endfor %}
   </div>
-  {% if slides|length > 1 %}
+  {% if slides|length > 3 %}
   <button class="carousel-control-prev" type="button" data-bs-target="#adminCarousel" data-bs-slide="prev">
     <span class="carousel-control-prev-icon"></span>
   </button>

@@ -10,35 +10,82 @@
 </div>
 {% endif %}
 
+<style>
+#yogaCarousel .carousel-item { height: 220px; position: relative; overflow: hidden; background: #222; }
+#yogaCarousel .yc-bg {
+    position: absolute; inset: -20px;
+    background-size: cover; background-position: center;
+    filter: blur(16px); opacity: 0.55; transform: scale(1.08);
+}
+#yogaCarousel .yc-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: contain; z-index: 1;
+}
+#yogaCarousel .yc-group { display: flex; height: 100%; width: 100%; }
+#yogaCarousel .yc-slot { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+#yogaCarousel .yc-slot + .yc-slot { border-left: 2px solid rgba(255,255,255,0.25); }
+#yogaCarousel .yc-slot img { width: 100%; height: 100%; object-fit: cover; }
+#yogaCarousel .yc-caption {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+    background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%);
+    padding: 28px 10px 8px; text-align: center;
+}
+#yogaCarousel .yc-caption h6 { color:#fff; font-size:.82rem; font-weight:700; margin:0; text-shadow:0 1px 3px rgba(0,0,0,.5); }
+#yogaCarousel .yc-caption p  { color:rgba(255,255,255,.88); font-size:.72rem; margin:0; }
+</style>
+
 <!-- Carousel (only if slides exist) -->
 {% if slides %}
 <div id="yogaCarousel" class="carousel slide mb-4 rounded shadow-sm overflow-hidden" data-bs-ride="carousel" data-bs-interval="4000">
   <div class="carousel-indicators">
-    {% for slide in slides %}
+    {% for i in range(0, slides|length, 3) %}
     <button type="button" data-bs-target="#yogaCarousel" data-bs-slide-to="{{ loop.index0 }}"
             {% if loop.first %}class="active"{% endif %}></button>
     {% endfor %}
   </div>
   <div class="carousel-inner">
-    {% for slide in slides %}
+    {% for i in range(0, slides|length, 3) %}
+    {% set group = slides[i:i+3] %}
     <div class="carousel-item {% if loop.first %}active{% endif %}">
-      {% if slide.image_path %}
-      <img src="{{ url_for('static', filename=slide.image_path) }}"
-           class="d-block w-100" style="height:220px; object-fit:cover;" alt="{{ slide.title }}">
+      {% if group|length == 1 %}
+        {% set slide = group[0] %}
+        {% if slide.image_path %}
+        <div class="yc-bg" style="background-image:url('{{ url_for('static', filename=slide.image_path) }}')"></div>
+        <img src="{{ url_for('static', filename=slide.image_path) }}" class="yc-img" alt="{{ slide.title }}">
+        {% else %}
+        <div class="d-flex align-items-center justify-content-center h-100"
+             style="background:linear-gradient(135deg,#5a2d00,#c96012);">
+          <span style="font-size:4rem; opacity:.6; color:white;">ॐ</span>
+        </div>
+        {% endif %}
+        <div class="yc-caption">
+          <h6>{{ slide.title }}</h6>
+          {% if slide.body %}<p>{{ slide.body }}</p>{% endif %}
+        </div>
       {% else %}
-      <div class="d-block w-100 d-flex align-items-center justify-content-center"
-           style="height:220px; background:linear-gradient(135deg,#5a2d00,#c96012);">
-        <span style="font-size:4rem; opacity:.6">ॐ</span>
-      </div>
+        <div class="yc-group">
+          {% for slide in group %}
+          <div class="yc-slot">
+            {% if slide.image_path %}
+            <img src="{{ url_for('static', filename=slide.image_path) }}" alt="{{ slide.title }}">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center h-100"
+                 style="background:linear-gradient(135deg,#5a2d00,#c96012);">
+              <span style="font-size:2.5rem; opacity:.6; color:white;">ॐ</span>
+            </div>
+            {% endif %}
+            <div class="yc-caption">
+              <h6>{{ slide.title }}</h6>
+              {% if slide.body %}<p>{{ slide.body }}</p>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       {% endif %}
-      <div class="carousel-caption d-block" style="background:rgba(0,0,0,0.45); border-radius:8px; bottom:12px; padding:8px 14px;">
-        <h6 class="fw-bold mb-0" style="font-size:.95rem">{{ slide.title }}</h6>
-        {% if slide.body %}<p class="mb-0 small opacity-85">{{ slide.body }}</p>{% endif %}
-      </div>
     </div>
     {% endfor %}
   </div>
-  {% if slides|length > 1 %}
+  {% if slides|length > 3 %}
   <button class="carousel-control-prev" type="button" data-bs-target="#yogaCarousel" data-bs-slide="prev">
     <span class="carousel-control-prev-icon"></span>
   </button>
