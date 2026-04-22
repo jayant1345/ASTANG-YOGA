@@ -29,25 +29,29 @@ def create_admin(name, email, password):
 
 @app.cli.command('init-db')
 def init_db():
-    """Create tables, auto-create admin, and seed classes — safe to re-run."""
+    """Create tables, auto-create admin, deduplicate and seed classes."""
     from app import _auto_create_admin
     from app.models import YogaClass
+    from sqlalchemy import func
     with app.app_context():
         db.create_all()
         click.echo('Tables ready.')
 
         _auto_create_admin()
 
-        if YogaClass.query.first():
-            click.echo('Classes already seeded.')
-            return
+        # Remove duplicate classes — keep lowest id per name
+        name_to_min_id = dict(
+            db.session.query(YogaClass.name, func.min(YogaClass.id))
+            .group_by(YogaClass.name).all()
+        )
+        if name_to_min_id:
+            keep_ids = list(name_to_min_id.values())
+            removed = YogaClass.query.filter(YogaClass.id.notin_(keep_ids)).delete(synchronize_session=False)
+            db.session.commit()
+            if removed:
+                click.echo(f'Removed {removed} duplicate class(es).')
 
-        admin = User.query.filter_by(role='admin').first()
-        if not admin:
-            click.echo('No admin found — set ADMIN_EMAIL and ADMIN_PASSWORD env vars.')
-            return
-
-        classes = [
+        EXPECTED = [
             ('Morning 06:15 Batch', '06:15 AM', 'Main Hall', 2500.0),
             ('Morning 07:15 Batch', '07:15 AM', 'Main Hall', 2500.0),
             ('Morning 08:15 Batch', '08:15 AM', 'Main Hall', 2500.0),
@@ -58,14 +62,26 @@ def init_db():
             ('Evening 06:15 Batch', '06:15 PM', 'Main Hall', 2500.0),
             ('Evening 07:15 Batch', '07:15 PM', 'Main Hall', 2500.0),
         ]
-        for name, time, location, fee in classes:
-            db.session.add(YogaClass(
-                name=name, schedule_time=time,
-                location=location, monthly_fee_amount=fee,
-                instructor_id=admin.id,
-            ))
+
+        existing_names = {c.name for c in YogaClass.query.all()}
+        if existing_names == {n for n, *_ in EXPECTED}:
+            click.echo('Classes already correct — skipping seed.')
+            return
+
+        admin = User.query.filter_by(role='admin').first()
+        if not admin:
+            click.echo('No admin found — set ADMIN_EMAIL and ADMIN_PASSWORD env vars.')
+            return
+
+        for name, time, location, fee in EXPECTED:
+            if name not in existing_names:
+                db.session.add(YogaClass(
+                    name=name, schedule_time=time,
+                    location=location, monthly_fee_amount=fee,
+                    instructor_id=admin.id,
+                ))
         db.session.commit()
-        click.echo(f'Seeded {len(classes)} yoga classes.')
+        click.echo('Classes seeded.')
 
 
 if __name__ == '__main__':

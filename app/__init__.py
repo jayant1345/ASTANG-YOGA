@@ -59,7 +59,6 @@ def create_app():
     with app.app_context():
         db.create_all()
         _auto_create_admin()
-        _auto_seed_classes()
 
     return app
 
@@ -82,32 +81,4 @@ def _auto_create_admin():
     )
     admin.set_password(admin_password)
     db.session.add(admin)
-    db.session.commit()
-
-
-def _auto_seed_classes():
-    """Seed the 9 default yoga batch classes if none exist."""
-    from app.models import User, YogaClass
-    if YogaClass.query.first():
-        return
-    admin = User.query.filter_by(role='admin').first()
-    if not admin:
-        return
-    classes = [
-        ('Morning 06:15 Batch', '06:15 AM', 'Main Hall', 2500.0),
-        ('Morning 07:15 Batch', '07:15 AM', 'Main Hall', 2500.0),
-        ('Morning 08:15 Batch', '08:15 AM', 'Main Hall', 2500.0),
-        ('Morning 09:15 Batch', '09:15 AM', 'Main Hall', 2500.0),
-        ('Morning 10:15 Batch', '10:15 AM', 'Main Hall', 2500.0),
-        ('Morning 11:15 Batch', '11:15 AM', 'Main Hall', 2500.0),
-        ('Evening 05:15 Batch', '05:15 PM', 'Main Hall', 2500.0),
-        ('Evening 06:15 Batch', '06:15 PM', 'Main Hall', 2500.0),
-        ('Evening 07:15 Batch', '07:15 PM', 'Main Hall', 2500.0),
-    ]
-    for name, time, location, fee in classes:
-        db.session.add(YogaClass(
-            name=name, schedule_time=time,
-            location=location, monthly_fee_amount=fee,
-            instructor_id=admin.id,
-        ))
     db.session.commit()
