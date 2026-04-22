@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Ashtang Yoga School{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3 gap-2">
+  <a href="{{ url_for('admin.carousel') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <h4 class="fw-bold mb-0"><i class="bi bi-images me-2 text-primary"></i>{{ title }}</h4>
+</div>
+
+<div class="card shadow-sm border-0" style="max-width:560px">
+  <div class="card-body">
+    {% if slide and slide.image_path %}
+    <div class="mb-3">
+      <p class="text-muted small mb-1">Current photo:</p>
+      <img src="{{ url_for('static', filename=slide.image_path) }}"
+           class="rounded" style="max-height:200px; object-fit:cover; width:100%;">
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+
+      <div class="mb-3">
+        {{ form.title.label(class='form-label fw-semibold') }}
+        {{ form.title(class='form-control') }}
+      </div>
+
+      <div class="mb-3">
+        {{ form.body.label(class='form-label fw-semibold') }}
+        {{ form.body(class='form-control', rows=4, placeholder='Caption or description shown below the title…') }}
+      </div>
+
+      <div class="mb-3">
+        {{ form.image.label(class='form-label fw-semibold') }}
+        {{ form.image(class='form-control') }}
+        <div class="form-text">Leave blank to keep existing photo.</div>
+      </div>
+
+      <div class="mb-3">
+        {{ form.slide_order.label(class='form-label fw-semibold') }}
+        {{ form.slide_order(class='form-control', style='width:100px', placeholder='0') }}
+        <div class="form-text">Slides are sorted lowest to highest. Use 1, 2, 3… to control order.</div>
+      </div>
+
+      <div class="mb-4 form-check">
+        {{ form.is_active(class='form-check-input') }}
+        {{ form.is_active.label(class='form-check-label') }}
+      </div>
+
+      {{ form.submit(class='btn btn-primary') }}
+      <a href="{{ url_for('admin.carousel') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

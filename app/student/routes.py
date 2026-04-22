@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from app import db
 from app.student import bp
-from app.models import Task, TaskSubmission, StudentClass, YogaClass, Attendance, ClassSession
+from app.models import Task, TaskSubmission, StudentClass, YogaClass, Attendance, ClassSession, CarouselSlide
 from app.decorators import student_required
 from app.utils import save_upload, allowed_file
 
@@ -33,11 +33,20 @@ def dashboard():
         if not sub or sub.status in ('pending', 'rejected'):
             pending_count += 1
 
+    slides = (CarouselSlide.query
+              .filter_by(is_active=True)
+              .order_by(CarouselSlide.slide_order, CarouselSlide.id)
+              .limit(5).all())
+
+    total_attendance = Attendance.query.filter_by(student_id=current_user.id).count()
+
     return render_template('student/dashboard.html',
                            fee_statuses=fee_statuses,
                            has_overdue=has_overdue,
                            pending_count=pending_count,
-                           enrolled_classes=enrolled_classes)
+                           enrolled_classes=enrolled_classes,
+                           slides=slides,
+                           total_attendance=total_attendance)
 
 
 @bp.route('/tasks')

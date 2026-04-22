@@ -54,6 +54,17 @@ class FeeRecordForm(FlaskForm):
     submit = SubmitField('Record Payment')
 
 
+class CarouselSlideForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(max=200)])
+    body = TextAreaField('Write-up / Caption', validators=[Optional()])
+    image = FileField('Photo', validators=[
+        Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only')
+    ])
+    slide_order = StringField('Order (lower = first)', validators=[Optional()])
+    is_active = BooleanField('Show on student page', default=True)
+    submit = SubmitField('Save Slide')
+
+
 class AttendanceOverrideForm(FlaskForm):
     student_id = SelectField('Student', coerce=int, validators=[DataRequired()])
     status = SelectField('Status', choices=[

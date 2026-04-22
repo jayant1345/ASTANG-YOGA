@@ -236,6 +236,18 @@ class Task(db.Model):
     submissions = db.relationship('TaskSubmission', backref='task', lazy='dynamic')
 
 
+class CarouselSlide(db.Model):
+    __tablename__ = 'carousel_slide'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    body = db.Column(db.Text)
+    image_path = db.Column(db.String(255))
+    slide_order = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class TaskSubmission(db.Model):
     __tablename__ = 'task_submission'
 

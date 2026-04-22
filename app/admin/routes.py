@@ -4,9 +4,9 @@ from flask_login import login_required, current_user
 from app import db
 from app.admin import bp
 from app.admin.forms import (UserForm, YogaClassForm, EnrollStudentForm,
-                              FeeRecordForm, AttendanceOverrideForm)
+                              FeeRecordForm, AttendanceOverrideForm, CarouselSlideForm)
 from app.models import (User, YogaClass, StudentClass, ClassSession,
-                        Attendance, FeeRecord, RegistrationRequest)
+                        Attendance, FeeRecord, RegistrationRequest, CarouselSlide)
 from app.decorators import admin_required
 from app.utils import (save_upload, export_csv_response,
                        generate_password_reset_token, generate_class_token, generate_qr_b64)
@@ -554,3 +554,65 @@ def class_qr(class_id):
     verify_url = url_for('attendance.verify', class_token=class_token, _external=True)
     qr_b64 = generate_qr_b64(verify_url)
     return render_template('admin/class_qr.html', yc=yc, qr_b64=qr_b64)
+
+
+# ── Carousel Slides ───────────────────────────────────────────────────────────
+
+@bp.route('/carousel')
+@login_required
+@admin_required
+def carousel():
+    slides = CarouselSlide.query.order_by(CarouselSlide.slide_order, CarouselSlide.id).all()
+    return render_template('admin/carousel.html', slides=slides)
+
+
+@bp.route('/carousel/new', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def carousel_new():
+    form = CarouselSlideForm()
+    if form.validate_on_submit():
+        slide = CarouselSlide(
+            title=form.title.data.strip(),
+            body=form.body.data,
+            slide_order=int(form.slide_order.data or 0),
+            is_active=form.is_active.data,
+        )
+        if form.image.data and form.image.data.filename:
+            slide.image_path = save_upload(form.image.data, 'profiles')
+        db.session.add(slide)
+        db.session.commit()
+        flash('Slide added.', 'success')
+        return redirect(url_for('admin.carousel'))
+    return render_template('admin/carousel_form.html', form=form, title='New Slide', slide=None)
+
+
+@bp.route('/carousel/<int:slide_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def carousel_edit(slide_id):
+    slide = CarouselSlide.query.get_or_404(slide_id)
+    form = CarouselSlideForm(obj=slide)
+    if form.validate_on_submit():
+        slide.title = form.title.data.strip()
+        slide.body = form.body.data
+        slide.slide_order = int(form.slide_order.data or 0)
+        slide.is_active = form.is_active.data
+        if form.image.data and form.image.data.filename:
+            slide.image_path = save_upload(form.image.data, 'profiles')
+        db.session.commit()
+        flash('Slide updated.', 'success')
+        return redirect(url_for('admin.carousel'))
+    form.slide_order.data = str(slide.slide_order)
+    return render_template('admin/carousel_form.html', form=form, title='Edit Slide', slide=slide)
+
+
+@bp.route('/carousel/<int:slide_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def carousel_delete(slide_id):
+    slide = CarouselSlide.query.get_or_404(slide_id)
+    db.session.delete(slide)
+    db.session.commit()
+    flash('Slide deleted.', 'success')
+    return redirect(url_for('admin.carousel'))

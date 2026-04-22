@@ -2,26 +2,86 @@
 {% block title %}Home — Ashtang Yoga School{% endblock %}
 
 {% block content %}
+
 {% if has_overdue %}
 <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
   <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-  <div>
-    <strong>Fee Overdue!</strong> Attendance scanning is blocked until fees are cleared. Contact your admin.
-  </div>
+  <div><strong>Fee Overdue!</strong> Attendance scanning is blocked until fees are cleared. Contact admin.</div>
 </div>
 {% endif %}
 
-<h5 class="fw-bold mb-4">Welcome, {{ current_user.name.split()[0] }}!</h5>
+<!-- Carousel (only if slides exist) -->
+{% if slides %}
+<div id="yogaCarousel" class="carousel slide mb-4 rounded shadow-sm overflow-hidden" data-bs-ride="carousel" data-bs-interval="4000">
+  <div class="carousel-indicators">
+    {% for slide in slides %}
+    <button type="button" data-bs-target="#yogaCarousel" data-bs-slide-to="{{ loop.index0 }}"
+            {% if loop.first %}class="active"{% endif %}></button>
+    {% endfor %}
+  </div>
+  <div class="carousel-inner">
+    {% for slide in slides %}
+    <div class="carousel-item {% if loop.first %}active{% endif %}">
+      {% if slide.image_path %}
+      <img src="{{ url_for('static', filename=slide.image_path) }}"
+           class="d-block w-100" style="height:220px; object-fit:cover;" alt="{{ slide.title }}">
+      {% else %}
+      <div class="d-block w-100 d-flex align-items-center justify-content-center"
+           style="height:220px; background:linear-gradient(135deg,#5a2d00,#c96012);">
+        <span style="font-size:4rem; opacity:.6">ॐ</span>
+      </div>
+      {% endif %}
+      <div class="carousel-caption d-block" style="background:rgba(0,0,0,0.45); border-radius:8px; bottom:12px; padding:8px 14px;">
+        <h6 class="fw-bold mb-0" style="font-size:.95rem">{{ slide.title }}</h6>
+        {% if slide.body %}<p class="mb-0 small opacity-85">{{ slide.body }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% if slides|length > 1 %}
+  <button class="carousel-control-prev" type="button" data-bs-target="#yogaCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#yogaCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+  {% endif %}
+</div>
+{% endif %}
 
-<!-- 2 big action buttons -->
-<div class="row g-4 mb-5">
+<!-- Student profile card -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body d-flex align-items-center gap-3 py-3">
+    {% if current_user.profile_photo %}
+    <img src="{{ url_for('static', filename=current_user.profile_photo) }}"
+         class="rounded-circle" style="width:56px; height:56px; object-fit:cover;">
+    {% else %}
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:56px; height:56px; background:linear-gradient(135deg,#d4640a,#f0913a); color:white; font-size:1.4rem; font-weight:700;">
+      {{ current_user.name[0].upper() }}
+    </div>
+    {% endif %}
+    <div class="flex-grow-1 min-width-0">
+      <h6 class="fw-bold mb-0">{{ current_user.name }}</h6>
+      <small class="text-muted">{{ current_user.email }}</small>
+      {% if current_user.phone %}<br><small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ current_user.phone }}</small>{% endif %}
+    </div>
+    <div class="text-end flex-shrink-0">
+      <div class="fw-bold text-primary" style="font-size:1.2rem">{{ total_attendance }}</div>
+      <small class="text-muted">Sessions</small>
+    </div>
+  </div>
+</div>
+
+<!-- Action buttons -->
+<div class="row g-3 mb-4">
   <div class="col-6">
     <a href="{{ url_for('attendance.scan') }}"
        class="action-btn-card card shadow text-decoration-none text-center {{ 'opacity-50 pe-none' if has_overdue else '' }}"
-       style="background: linear-gradient(135deg, #3a6b35 0%, #5a9e53 100%); color: white;">
-      <div class="card-body py-5">
-        <i class="bi bi-qr-code-scan" style="font-size:3.5rem"></i>
-        <p class="fw-bold mt-3 mb-0 fs-5">Scan Attendance</p>
+       style="background:linear-gradient(135deg,#d4640a,#f0913a); color:white;">
+      <div class="card-body py-4">
+        <i class="bi bi-qr-code-scan" style="font-size:2.8rem"></i>
+        <p class="fw-bold mt-2 mb-0">Scan QR</p>
         {% if has_overdue %}<small class="opacity-75">Blocked — fees overdue</small>{% endif %}
       </div>
     </a>
@@ -29,25 +89,24 @@
   <div class="col-6">
     <a href="{{ url_for('student.tasks') }}"
        class="action-btn-card card shadow text-decoration-none text-center"
-       style="background: linear-gradient(135deg, #795548 0%, #a1745c 100%); color: white;">
-      <div class="card-body py-5">
-        <i class="bi bi-list-task" style="font-size:3.5rem"></i>
+       style="background:linear-gradient(135deg,#795548,#a1745c); color:white;">
+      <div class="card-body py-4">
+        <i class="bi bi-list-task" style="font-size:2.8rem"></i>
         {% if pending_count %}
-        <span class="badge bg-warning text-dark ms-1" style="position:relative; top:-12px; font-size:.75rem">{{ pending_count }}</span>
+        <span class="badge bg-warning text-dark ms-1" style="position:relative;top:-10px;font-size:.7rem">{{ pending_count }}</span>
         {% endif %}
-        <p class="fw-bold mt-3 mb-0 fs-5">My Tasks</p>
+        <p class="fw-bold mt-2 mb-0">My Tasks</p>
         {% if pending_count %}<small class="opacity-75">{{ pending_count }} pending</small>{% endif %}
       </div>
     </a>
   </div>
 </div>
 
-<!-- Fee Status per class -->
+<!-- Fee Status -->
 {% if fee_statuses %}
-<h6 class="fw-semibold mb-2 text-muted text-uppercase" style="font-size:.75rem;letter-spacing:.05em">Fee Status</h6>
+<h6 class="fw-semibold mb-2 text-muted text-uppercase" style="font-size:.72rem;letter-spacing:.05em">Fee Status</h6>
 <div class="row g-2 mb-4">
-  {% for fs in fee_statuses %}
-  {% if fs %}
+  {% for fs in fee_statuses %}{% if fs %}
   <div class="col-12 col-md-6">
     <div class="card border-0 shadow-sm
       {% if fs.status == 'paid' %}border-start border-success border-4
@@ -67,22 +126,19 @@
           </div>
           <div class="text-end">
             <span class="fw-bold">₹{{ "{:,.0f}".format(fs.amount) }}</span>
-            {% if fs.status == 'overdue' %}
-            <br><small class="text-danger">{{ fs.days_overdue }} days overdue</small>
-            {% endif %}
+            {% if fs.status == 'overdue' %}<br><small class="text-danger">{{ fs.days_overdue }}d overdue</small>{% endif %}
           </div>
         </div>
       </div>
     </div>
   </div>
-  {% endif %}
-  {% endfor %}
+  {% endif %}{% endfor %}
 </div>
 {% endif %}
 
 <!-- Enrolled classes -->
 {% if enrolled_classes %}
-<h6 class="fw-semibold mb-2 text-muted text-uppercase" style="font-size:.75rem;letter-spacing:.05em">My Classes</h6>
+<h6 class="fw-semibold mb-2 text-muted text-uppercase" style="font-size:.72rem;letter-spacing:.05em">My Classes</h6>
 <div class="row g-2">
   {% for cls in enrolled_classes %}
   <div class="col-12 col-md-6">
@@ -99,4 +155,5 @@
   {% endfor %}
 </div>
 {% endif %}
+
 {% endblock %}
