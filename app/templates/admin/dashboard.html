@@ -1,21 +1,11 @@
 <style>
+/* Shared carousel structure */
+#adminCarouselMob,
 #adminCarousel {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.18);
 }
-
-/* Mobile first: compact height */
-.carousel-item {
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-    background: #222;
-}
-@media (min-width: 576px) { .carousel-item { height: 280px; } }
-@media (min-width: 768px) { .carousel-item { height: 360px; } }
-@media (min-width: 1024px) { .carousel-item { height: 420px; } }
-
 .carousel-bg {
     position: absolute;
     inset: -20px;
@@ -52,40 +42,51 @@
     height: 100%;
     object-fit: cover;
 }
-
-/* Caption: mobile first — small and tight */
 .carousel-caption-overlay {
     position: absolute;
     bottom: 0; left: 0; right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
-    padding: 24px 8px 8px;
     text-align: center;
     z-index: 2;
+    padding: 24px 10px 10px;
 }
 .carousel-caption-overlay h5 {
     color: #fff;
     font-weight: 700;
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     margin-bottom: 2px;
     text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
 .carousel-caption-overlay p {
     color: rgba(255,255,255,0.9);
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     margin: 0;
     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
-/* Caption grows on larger screens */
-@media (min-width: 576px) {
-    .carousel-caption-overlay { padding: 32px 12px 12px; }
-    .carousel-caption-overlay h5 { font-size: 0.88rem; }
-    .carousel-caption-overlay p  { font-size: 0.76rem; }
+/* Mobile carousel: 1 image, fixed height */
+#adminCarouselMob .carousel-item {
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+    background: #222;
 }
+
+/* Desktop carousel: 2 images, responsive height */
+#adminCarousel .carousel-item {
+    height: 320px;
+    position: relative;
+    overflow: hidden;
+    background: #222;
+}
+@media (min-width: 992px)  { #adminCarousel .carousel-item { height: 380px; } }
+@media (min-width: 1200px) { #adminCarousel .carousel-item { height: 420px; } }
+
+/* Desktop captions scale up */
 @media (min-width: 768px) {
-    .carousel-caption-overlay { padding: 48px 20px 16px; }
-    .carousel-caption-overlay h5 { font-size: 1.05rem; }
-    .carousel-caption-overlay p  { font-size: 0.85rem; }
+    .carousel-caption-overlay          { padding: 40px 20px 16px; }
+    .carousel-caption-overlay h5       { font-size: 1.05rem; }
+    .carousel-caption-overlay p        { font-size: 0.85rem; }
 }
 </style>
 {% extends "base.html" %}
@@ -95,7 +96,49 @@
 <h4 class="fw-bold mb-3"><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h4>
 
 {% if slides %}
-<div id="adminCarousel" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="7500">
+
+{# ── MOBILE CAROUSEL: 1 image per slide (hidden on md+) ── #}
+<div class="d-md-none mb-4">
+<div id="adminCarouselMob" class="carousel slide" data-bs-ride="carousel" data-bs-interval="7500">
+  <div class="carousel-indicators">
+    {% for slide in slides %}
+    <button type="button" data-bs-target="#adminCarouselMob" data-bs-slide-to="{{ loop.index0 }}"
+            {% if loop.first %}class="active"{% endif %}></button>
+    {% endfor %}
+  </div>
+  <div class="carousel-inner">
+    {% for slide in slides %}
+    <div class="carousel-item {% if loop.first %}active{% endif %}">
+      {% if slide.image_path %}
+      <div class="carousel-bg" style="background-image:url('{{ url_for('static', filename=slide.image_path) }}')"></div>
+      <img src="{{ url_for('static', filename=slide.image_path) }}" class="carousel-img" alt="{{ slide.title }}">
+      {% else %}
+      <div class="d-flex align-items-center justify-content-center h-100"
+           style="background:linear-gradient(135deg,#5a2d00,#c96012);">
+        <span style="font-size:4rem; opacity:.4; color:white;">ॐ</span>
+      </div>
+      {% endif %}
+      <div class="carousel-caption-overlay">
+        <h5>{{ slide.title }}</h5>
+        {% if slide.body %}<p>{{ slide.body }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% if slides|length > 1 %}
+  <button class="carousel-control-prev" type="button" data-bs-target="#adminCarouselMob" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#adminCarouselMob" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+  {% endif %}
+</div>
+</div>
+
+{# ── DESKTOP CAROUSEL: 2 images per slide (hidden below md) ── #}
+<div class="d-none d-md-block mb-4">
+<div id="adminCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="7500">
   <div class="carousel-indicators">
     {% for i in range(0, slides|length, 2) %}
     <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="{{ loop.index0 }}"
@@ -110,9 +153,7 @@
         {% set slide = group[0] %}
         {% if slide.image_path %}
         <div class="carousel-bg" style="background-image:url('{{ url_for('static', filename=slide.image_path) }}')"></div>
-        <img src="{{ url_for('static', filename=slide.image_path) }}"
-             class="carousel-img"
-             alt="{{ slide.title }}">
+        <img src="{{ url_for('static', filename=slide.image_path) }}" class="carousel-img" alt="{{ slide.title }}">
         {% else %}
         <div class="d-flex align-items-center justify-content-center h-100"
              style="background:linear-gradient(135deg,#5a2d00,#c96012);">
@@ -155,6 +196,8 @@
   </button>
   {% endif %}
 </div>
+</div>
+
 {% endif %}
 
 <!-- KPI Cards -->
