@@ -19,13 +19,14 @@ class RegistrationForm(FlaskForm):
     address = TextAreaField('Address', validators=[Optional(), Length(max=300)])
     class_preference = StringField('Preferred Class / Batch Time',
                                    validators=[Optional(), Length(max=200)])
-    blood_group = SelectField('Blood Group', validators=[Optional()],
+    blood_group = SelectField('Blood Group',
                               choices=[('', '— Select —'),
                                        ('A+', 'A+'), ('A-', 'A-'),
                                        ('B+', 'B+'), ('B-', 'B-'),
                                        ('AB+', 'AB+'), ('AB-', 'AB-'),
                                        ('O+', 'O+'), ('O-', 'O-'),
-                                       ('Unknown', 'Unknown / Not Sure')])
+                                       ('Unknown', 'Unknown / Not Sure')],
+                              validate_choice=False)
     medical_condition = TextAreaField('Medical Conditions / Health Notes',
                                       validators=[Optional(), Length(max=1000)],
                                       description='e.g. BP, back pain, knee surgery, diabetes…')
