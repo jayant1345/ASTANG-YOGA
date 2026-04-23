@@ -9,7 +9,7 @@ from app.models import (User, YogaClass, StudentClass, ClassSession,
                         Attendance, FeeRecord, RegistrationRequest, CarouselSlide)
 from app.decorators import admin_required
 from app.utils import (save_upload, export_csv_response,
-                       generate_password_reset_token, generate_class_token, generate_qr_b64)
+                       generate_password_reset_token, generate_class_token, generate_qr_b64, now_ist)
 
 
 @bp.route('/')
@@ -430,7 +430,7 @@ def attendance_mark(session_id, student_id):
             session_id=session_id,
             status=status,
             overridden_by_admin=True,
-            timestamp=datetime.utcnow()
+            timestamp=now_ist()
         )
         db.session.add(att)
     db.session.commit()
@@ -499,7 +499,7 @@ def registration_approve(req_id):
         flash('A user with this email already exists.', 'danger')
         reg.status = 'rejected'
         reg.reject_reason = 'Email already registered'
-        reg.reviewed_at = datetime.utcnow()
+        reg.reviewed_at = now_ist()
         reg.reviewed_by_id = current_user.id
         db.session.commit()
         return redirect(url_for('admin.registrations'))
@@ -513,7 +513,7 @@ def registration_approve(req_id):
     )
     db.session.add(user)
     reg.status = 'approved'
-    reg.reviewed_at = datetime.utcnow()
+    reg.reviewed_at = now_ist()
     reg.reviewed_by_id = current_user.id
     db.session.commit()
     flash(f'"{reg.name}" approved and account created.', 'success')
@@ -531,7 +531,7 @@ def registration_reject(req_id):
     reason = request.form.get('reason', '').strip()
     reg.status = 'rejected'
     reg.reject_reason = reason
-    reg.reviewed_at = datetime.utcnow()
+    reg.reviewed_at = now_ist()
     reg.reviewed_by_id = current_user.id
     db.session.commit()
     flash(f'Registration for "{reg.name}" rejected.', 'info')

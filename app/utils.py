@@ -2,8 +2,14 @@ import os
 import io
 import base64
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import current_app, make_response
+
+_IST = timedelta(hours=5, minutes=30)
+
+def now_ist():
+    """Current time in IST (UTC+5:30)."""
+    return datetime.utcnow() + _IST
 from itsdangerous import (URLSafeTimedSerializer, URLSafeSerializer,
                           SignatureExpired, BadSignature)
 import qrcode

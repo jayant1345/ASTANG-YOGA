@@ -4,6 +4,7 @@ from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login_manager
+from app.utils import now_ist
 
 
 @login_manager.user_loader
@@ -22,7 +23,7 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(20), nullable=False)  # admin, instructor, student
     profile_photo = db.Column(db.String(255))
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_ist)
 
     enrollments = db.relationship('StudentClass', foreign_keys='StudentClass.student_id',
                                   backref='student', lazy='dynamic')
@@ -117,7 +118,7 @@ class YogaClass(db.Model):
     location = db.Column(db.String(200))
     monthly_fee_amount = db.Column(db.Float, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_ist)
 
     instructor = db.relationship('User', foreign_keys=[instructor_id],
                                  backref=db.backref('taught_classes', lazy='dynamic'))
@@ -153,7 +154,7 @@ class ClassSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     class_id = db.Column(db.Integer, db.ForeignKey('yoga_class.id'), nullable=False)
     instructor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    started_at = db.Column(db.DateTime, default=datetime.utcnow)
+    started_at = db.Column(db.DateTime, default=now_ist)
     ended_at = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
     signed_token = db.Column(db.String(500), unique=True)
@@ -163,7 +164,7 @@ class ClassSession(db.Model):
 
     @property
     def duration_minutes(self):
-        end = self.ended_at or datetime.utcnow()
+        end = self.ended_at or now_ist()
         return int((end - self.started_at).total_seconds() / 60)
 
 
@@ -173,7 +174,7 @@ class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     session_id = db.Column(db.Integer, db.ForeignKey('class_session.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=now_ist)
     status = db.Column(db.String(20), default='present')  # present, late, absent
     overridden_by_admin = db.Column(db.Boolean, default=False)
 
@@ -213,7 +214,7 @@ class RegistrationRequest(db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
     reject_reason = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_ist)
     reviewed_at = db.Column(db.DateTime)
     reviewed_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -233,7 +234,7 @@ class Task(db.Model):
     assigned_by_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     assigned_to_student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     assigned_to_class_id = db.Column(db.Integer, db.ForeignKey('yoga_class.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_ist)
 
     assigned_by = db.relationship('User', foreign_keys=[assigned_by_id])
     assigned_to_student = db.relationship('User', foreign_keys=[assigned_to_student_id])
@@ -250,7 +251,7 @@ class CarouselSlide(db.Model):
     image_path = db.Column(db.String(255))
     slide_order = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=now_ist)
 
 
 class TaskSubmission(db.Model):

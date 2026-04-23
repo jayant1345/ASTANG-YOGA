@@ -1,10 +1,9 @@
-from datetime import datetime
 from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from app import db
 from app.attendance import bp
 from app.models import ClassSession, Attendance, StudentClass, YogaClass
-from app.utils import verify_class_token, generate_class_token, generate_qr_b64
+from app.utils import verify_class_token, generate_class_token, generate_qr_b64, now_ist
 
 
 @bp.route('/scan')
@@ -78,7 +77,7 @@ def verify():
                                session_obj=session_obj, yc=yc,
                                status=existing.status, already_marked=True)
 
-    elapsed = (datetime.utcnow() - session_obj.started_at).total_seconds() / 60
+    elapsed = (now_ist() - session_obj.started_at).total_seconds() / 60
     late_threshold = current_app.config.get('LATE_THRESHOLD_MINUTES', 10)
     status = 'late' if elapsed > late_threshold else 'present'
 
@@ -86,7 +85,7 @@ def verify():
         student_id=current_user.id,
         session_id=session_obj.id,
         status=status,
-        timestamp=datetime.utcnow()
+        timestamp=now_ist()
     )
     db.session.add(att)
     db.session.commit()

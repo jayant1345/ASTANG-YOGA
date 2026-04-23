@@ -7,7 +7,7 @@ from app.instructor.forms import TaskForm, TaskReviewForm
 from app.models import (YogaClass, ClassSession, Attendance,
                         StudentClass, User, Task, TaskSubmission)
 from app.decorators import instructor_required
-from app.utils import generate_session_token, generate_class_token, generate_qr_b64
+from app.utils import generate_session_token, generate_class_token, generate_qr_b64, now_ist
 
 
 def _instructor_classes():
@@ -59,7 +59,7 @@ def session_start(class_id):
     session_obj = ClassSession(
         class_id=class_id,
         instructor_id=current_user.id,
-        started_at=datetime.utcnow(),
+        started_at=now_ist(),
         is_active=True,
     )
     db.session.add(session_obj)
@@ -114,7 +114,7 @@ def session_end(session_id):
         abort(403)
 
     session_obj.is_active = False
-    session_obj.ended_at = datetime.utcnow()
+    session_obj.ended_at = now_ist()
     db.session.commit()
     flash('Session ended.', 'success')
     return redirect(url_for('instructor.dashboard'))
@@ -206,7 +206,7 @@ def task_review(task_id):
         submission.status = form.status.data
         submission.review_comment = form.review_comment.data
         submission.reviewed_by_id = current_user.id
-        submission.reviewed_at = datetime.utcnow()
+        submission.reviewed_at = now_ist()
         db.session.commit()
         flash('Review submitted.', 'success')
         return redirect(url_for('instructor.tasks'))

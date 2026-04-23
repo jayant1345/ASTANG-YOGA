@@ -5,7 +5,7 @@ from app import db
 from app.student import bp
 from app.models import Task, TaskSubmission, StudentClass, YogaClass, Attendance, ClassSession, CarouselSlide, FeeRecord
 from app.decorators import student_required
-from app.utils import save_upload, allowed_file
+from app.utils import save_upload, allowed_file, now_ist
 
 
 @bp.route('/')
@@ -115,7 +115,7 @@ def task_submit(task_id):
 
     if sub:
         sub.status = 'submitted'
-        sub.submitted_at = datetime.utcnow()
+        sub.submitted_at = now_ist()
         if proof_path:
             sub.proof_upload = proof_path
         sub.review_comment = None
@@ -124,7 +124,7 @@ def task_submit(task_id):
             task_id=task_id,
             student_id=current_user.id,
             status='submitted',
-            submitted_at=datetime.utcnow(),
+            submitted_at=now_ist(),
             proof_upload=proof_path,
         )
         db.session.add(sub)
