@@ -22,6 +22,8 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # admin, instructor, student
     profile_photo = db.Column(db.String(255))
+    blood_group = db.Column(db.String(10))
+    medical_condition = db.Column(db.Text)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=now_ist)
 
@@ -211,6 +213,8 @@ class RegistrationRequest(db.Model):
     dob = db.Column(db.Date, nullable=False)
     address = db.Column(db.Text)
     class_preference = db.Column(db.String(200))
+    blood_group = db.Column(db.String(10))
+    medical_condition = db.Column(db.Text)
     password_hash = db.Column(db.String(256), nullable=False)
     status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
     reject_reason = db.Column(db.Text)

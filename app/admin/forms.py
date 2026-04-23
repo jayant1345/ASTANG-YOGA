@@ -19,6 +19,14 @@ class UserForm(FlaskForm):
     profile_photo = FileField('Profile Photo', validators=[
         Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only')
     ])
+    blood_group = SelectField('Blood Group', validators=[Optional()],
+                              choices=[('', '— Select —'),
+                                       ('A+', 'A+'), ('A-', 'A-'),
+                                       ('B+', 'B+'), ('B-', 'B-'),
+                                       ('AB+', 'AB+'), ('AB-', 'AB-'),
+                                       ('O+', 'O+'), ('O-', 'O-'),
+                                       ('Unknown', 'Unknown')])
+    medical_condition = TextAreaField('Medical Conditions', validators=[Optional(), Length(max=1000)])
     submit = SubmitField('Save User')
 
 

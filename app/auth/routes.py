@@ -57,6 +57,8 @@ def register():
             dob=form.dob.data,
             address=form.address.data,
             class_preference=form.class_preference.data,
+            blood_group=form.blood_group.data or None,
+            medical_condition=form.medical_condition.data or None,
         )
         req.set_password(form.password.data)
         db.session.add(req)

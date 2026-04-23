@@ -53,6 +53,18 @@
           </div>
 
           <div class="mb-3">
+            {{ form.blood_group.label(class="form-label fw-semibold small") }}
+            {{ form.blood_group(class="form-select") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.medical_condition.label(class="form-label fw-semibold small") }}
+            {{ form.medical_condition(class="form-control", rows=3,
+               placeholder="e.g. High BP, back pain, knee surgery, diabetes, post-operative condition… (optional)") }}
+            <div class="form-text">This helps us adapt yoga practices to your health needs.</div>
+          </div>
+
+          <div class="mb-3">
             {{ form.password.label(class="form-label fw-semibold small") }}
             {{ form.password(class="form-control", placeholder="Min 8 characters") }}
             {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors[0] }}</div>{% endif %}

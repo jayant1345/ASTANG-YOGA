@@ -49,6 +49,17 @@
             {% endif %}
           </div>
 
+          <div class="mb-3">
+            {{ form.blood_group.label(class="form-label fw-semibold") }}
+            {{ form.blood_group(class="form-select") }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.medical_condition.label(class="form-label fw-semibold") }}
+            {{ form.medical_condition(class="form-control", rows=3,
+               placeholder="e.g. BP, back pain, diabetes…") }}
+          </div>
+
           <div class="mb-4 form-check">
             {{ form.is_active(class="form-check-input") }}
             {{ form.is_active.label(class="form-check-label") }}

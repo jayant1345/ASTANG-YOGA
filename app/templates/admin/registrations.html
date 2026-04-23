@@ -52,6 +52,14 @@
         {% if reg.class_preference %}
         <p class="mb-1 small"><i class="bi bi-clock me-1 text-muted"></i>Preferred: {{ reg.class_preference }}</p>
         {% endif %}
+        {% if reg.blood_group %}
+        <p class="mb-1 small"><i class="bi bi-droplet me-1 text-danger"></i>Blood Group: <strong>{{ reg.blood_group }}</strong></p>
+        {% endif %}
+        {% if reg.medical_condition %}
+        <div class="mb-2 p-2 rounded small" style="background:#fff3cd;">
+          <i class="bi bi-heart-pulse me-1 text-warning"></i><strong>Medical:</strong> {{ reg.medical_condition }}
+        </div>
+        {% endif %}
         {% if reg.address %}
         <p class="mb-2 small text-muted">{{ reg.address }}</p>
         {% endif %}

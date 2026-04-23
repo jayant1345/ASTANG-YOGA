@@ -100,6 +100,8 @@ def user_new():
             return render_template('admin/user_form.html', form=form, title='New User')
         if form.profile_photo.data and form.profile_photo.data.filename:
             user.profile_photo = save_upload(form.profile_photo.data, 'profiles')
+        user.blood_group = form.blood_group.data or None
+        user.medical_condition = form.medical_condition.data or None
         db.session.add(user)
         db.session.commit()
         flash(f'User {user.name} created.', 'success')
@@ -127,6 +129,8 @@ def user_edit(user_id):
             user.set_password(form.password.data)
         if form.profile_photo.data and form.profile_photo.data.filename:
             user.profile_photo = save_upload(form.profile_photo.data, 'profiles')
+        user.blood_group = form.blood_group.data or None
+        user.medical_condition = form.medical_condition.data or None
         db.session.commit()
         flash(f'User {user.name} updated.', 'success')
         return redirect(url_for('admin.users'))
@@ -510,6 +514,8 @@ def registration_approve(req_id):
         role='student',
         is_active=True,
         password_hash=reg.password_hash,
+        blood_group=reg.blood_group,
+        medical_condition=reg.medical_condition,
     )
     db.session.add(user)
     reg.status = 'approved'
