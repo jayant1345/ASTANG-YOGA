@@ -43,6 +43,14 @@
              class="btn btn-sm btn-outline-success flex-grow-1">
             <i class="bi bi-tv"></i> Display
           </a>
+          <form method="POST" action="{{ url_for('admin.class_toggle_active', class_id=yc.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm {{ 'btn-warning' if yc.is_active else 'btn-success' }}"
+                    title="{{ 'Deactivate class' if yc.is_active else 'Activate class' }}">
+              <i class="bi {{ 'bi-pause-circle' if yc.is_active else 'bi-play-circle' }}"></i>
+              {{ 'Deactivate' if yc.is_active else 'Activate' }}
+            </button>
+          </form>
           <form method="POST" action="{{ url_for('admin.class_delete', class_id=yc.id) }}"
                 onsubmit="return confirm('Delete {{ yc.name }}? This cannot be undone.')">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

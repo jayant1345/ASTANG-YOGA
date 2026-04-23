@@ -207,6 +207,18 @@ def class_edit(class_id):
     return render_template('admin/class_form.html', form=form, title='Edit Class', yc=yc)
 
 
+@bp.route('/classes/<int:class_id>/toggle-active', methods=['POST'])
+@login_required
+@admin_required
+def class_toggle_active(class_id):
+    yc = YogaClass.query.get_or_404(class_id)
+    yc.is_active = not yc.is_active
+    db.session.commit()
+    state = 'activated' if yc.is_active else 'deactivated'
+    flash(f'Class "{yc.name}" {state}.', 'success')
+    return redirect(url_for('admin.classes'))
+
+
 @bp.route('/classes/<int:class_id>/delete', methods=['POST'])
 @login_required
 @admin_required
