@@ -75,9 +75,28 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        _run_migrations()
         _auto_create_admin()
 
     return app
+
+
+def _run_migrations():
+    """Add new columns to existing tables when deploying to an existing database.
+    Uses IF NOT EXISTS so it is safe to run on every startup."""
+    migrations = [
+        "ALTER TABLE \"user\" ADD COLUMN IF NOT EXISTS blood_group VARCHAR(10)",
+        "ALTER TABLE \"user\" ADD COLUMN IF NOT EXISTS medical_condition TEXT",
+        "ALTER TABLE registration_request ADD COLUMN IF NOT EXISTS blood_group VARCHAR(10)",
+        "ALTER TABLE registration_request ADD COLUMN IF NOT EXISTS medical_condition TEXT",
+    ]
+    try:
+        with db.engine.connect() as conn:
+            for sql in migrations:
+                conn.execute(db.text(sql))
+            conn.commit()
+    except Exception:
+        pass  # SQLite doesn't support IF NOT EXISTS for ADD COLUMN — db.create_all() handles it
 
 
 def _auto_create_admin():
