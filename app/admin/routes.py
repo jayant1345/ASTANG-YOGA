@@ -98,8 +98,9 @@ def user_new():
         else:
             flash('Password is required for new users.', 'danger')
             return render_template('admin/user_form.html', form=form, title='New User')
-        if form.profile_photo.data and form.profile_photo.data.filename:
-            user.profile_photo = save_upload(form.profile_photo.data, 'profiles')
+        photo = form.profile_photo.data
+        if photo and hasattr(photo, 'filename') and photo.filename:
+            user.profile_photo = save_upload(photo, 'profiles')
         user.blood_group = form.blood_group.data or None
         user.medical_condition = form.medical_condition.data or None
         db.session.add(user)
@@ -127,8 +128,9 @@ def user_edit(user_id):
         user.is_active = form.is_active.data
         if form.password.data:
             user.set_password(form.password.data)
-        if form.profile_photo.data and form.profile_photo.data.filename:
-            user.profile_photo = save_upload(form.profile_photo.data, 'profiles')
+        photo = form.profile_photo.data
+        if photo and hasattr(photo, 'filename') and photo.filename:
+            user.profile_photo = save_upload(photo, 'profiles')
         user.blood_group = form.blood_group.data or None
         user.medical_condition = form.medical_condition.data or None
         db.session.commit()

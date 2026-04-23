@@ -82,21 +82,25 @@ def create_app():
 
 
 def _run_migrations():
-    """Add new columns to existing tables when deploying to an existing database.
-    Uses IF NOT EXISTS so it is safe to run on every startup."""
-    migrations = [
-        "ALTER TABLE \"user\" ADD COLUMN IF NOT EXISTS blood_group VARCHAR(10)",
-        "ALTER TABLE \"user\" ADD COLUMN IF NOT EXISTS medical_condition TEXT",
-        "ALTER TABLE registration_request ADD COLUMN IF NOT EXISTS blood_group VARCHAR(10)",
-        "ALTER TABLE registration_request ADD COLUMN IF NOT EXISTS medical_condition TEXT",
+    """Add new columns to existing tables. Safe to run on every startup."""
+    is_postgres = 'postgresql' in str(db.engine.url)
+    columns = [
+        ('"user"',              'blood_group',       'VARCHAR(10)'),
+        ('"user"',              'medical_condition', 'TEXT'),
+        ('registration_request','blood_group',       'VARCHAR(10)'),
+        ('registration_request','medical_condition', 'TEXT'),
     ]
-    try:
-        with db.engine.connect() as conn:
-            for sql in migrations:
+    with db.engine.connect() as conn:
+        for table, col, col_type in columns:
+            try:
+                if is_postgres:
+                    sql = f'ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {col_type}'
+                else:
+                    sql = f'ALTER TABLE {table} ADD COLUMN {col} {col_type}'
                 conn.execute(db.text(sql))
-            conn.commit()
-    except Exception:
-        pass  # SQLite doesn't support IF NOT EXISTS for ADD COLUMN — db.create_all() handles it
+                conn.commit()
+            except Exception:
+                conn.rollback()  # column already exists — skip
 
 
 def _auto_create_admin():
