@@ -46,8 +46,17 @@ def verify():
 
     session_obj = yc.sessions.filter_by(is_active=True).first()
     if not session_obj:
-        flash(f'No active session for {yc.name} right now. Ask your instructor to start one.', 'warning')
-        return redirect(url_for('student.dashboard'))
+        if not yc.is_active:
+            flash(f'{yc.name} is not currently active. Contact admin.', 'warning')
+            return redirect(url_for('student.dashboard'))
+        # Auto-create today's session on first scan
+        session_obj = ClassSession(
+            class_id=yc.id,
+            instructor_id=yc.instructor_id,
+            is_active=True,
+        )
+        db.session.add(session_obj)
+        db.session.flush()  # get session_obj.id before commit
 
     if current_user.role == 'student':
         enrollment = StudentClass.query.filter_by(
