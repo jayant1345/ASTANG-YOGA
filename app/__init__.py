@@ -61,6 +61,18 @@ def create_app():
             return redirect(url_for('instructor.dashboard'))
         return redirect(url_for('student.dashboard'))
 
+    def _media_url(path):
+        """Return a usable URL for an uploaded file.
+        Cloudinary uploads store full https:// URLs; local uploads store relative paths."""
+        if not path:
+            return ''
+        if path.startswith(('http://', 'https://')):
+            return path
+        from flask import url_for
+        return url_for('static', filename=path)
+
+    app.jinja_env.globals['media_url'] = _media_url
+
     with app.app_context():
         db.create_all()
         _auto_create_admin()

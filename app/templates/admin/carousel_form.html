@@ -14,7 +14,7 @@
     {% if slide and slide.image_path %}
     <div class="mb-3">
       <p class="text-muted small mb-1">Current photo:</p>
-      <img src="{{ url_for('static', filename=slide.image_path) }}"
+      <img src="{{ media_url(slide.image_path) }}"
            class="rounded" style="max-height:200px; object-fit:cover; width:100%;">
     </div>
     {% endif %}

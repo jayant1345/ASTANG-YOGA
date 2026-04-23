@@ -11,3 +11,4 @@ Pillow>=10.0.0
 email-validator==2.3.0
 gunicorn==21.2.0
 pg8000==1.31.2
+cloudinary>=1.36.0

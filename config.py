@@ -17,9 +17,10 @@ class Config:
     LATE_THRESHOLD_MINUTES = int(os.environ.get('LATE_THRESHOLD_MINUTES', 10))
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app', 'static', 'uploads')
+    CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
 
     @staticmethod
     def init_app(app):
         base = Config.UPLOAD_FOLDER
-        for sub in ('profiles', 'proofs', 'qrcodes'):
+        for sub in ('profiles', 'proofs', 'qrcodes', 'slides'):
             os.makedirs(os.path.join(base, sub), exist_ok=True)

@@ -17,7 +17,7 @@
   <div class="col-12 col-md-6 col-lg-4">
     <div class="card shadow-sm border-0 h-100 {{ '' if slide.is_active else 'opacity-50' }}">
       {% if slide.image_path %}
-      <img src="{{ url_for('static', filename=slide.image_path) }}" class="card-img-top"
+      <img src="{{ media_url(slide.image_path) }}" class="card-img-top"
            style="height:180px; object-fit:cover;">
       {% else %}
       <div class="card-img-top d-flex align-items-center justify-content-center bg-light"

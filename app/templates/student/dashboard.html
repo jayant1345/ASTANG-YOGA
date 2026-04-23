@@ -69,8 +69,8 @@
     {% for slide in slides %}
     <div class="carousel-item {% if loop.first %}active{% endif %}">
       {% if slide.image_path %}
-      <div class="yc-bg" style="background-image:url('{{ url_for('static', filename=slide.image_path) }}')"></div>
-      <img src="{{ url_for('static', filename=slide.image_path) }}" class="yc-img" alt="{{ slide.title }}">
+      <div class="yc-bg" style="background-image:url('{{ media_url(slide.image_path) }}')"></div>
+      <img src="{{ media_url(slide.image_path) }}" class="yc-img" alt="{{ slide.title }}">
       {% else %}
       <div class="d-flex align-items-center justify-content-center h-100"
            style="background:linear-gradient(135deg,#5a2d00,#c96012);">
@@ -111,8 +111,8 @@
       {% if group|length == 1 %}
         {% set slide = group[0] %}
         {% if slide.image_path %}
-        <div class="yc-bg" style="background-image:url('{{ url_for('static', filename=slide.image_path) }}')"></div>
-        <img src="{{ url_for('static', filename=slide.image_path) }}" class="yc-img" alt="{{ slide.title }}">
+        <div class="yc-bg" style="background-image:url('{{ media_url(slide.image_path) }}')"></div>
+        <img src="{{ media_url(slide.image_path) }}" class="yc-img" alt="{{ slide.title }}">
         {% else %}
         <div class="d-flex align-items-center justify-content-center h-100"
              style="background:linear-gradient(135deg,#5a2d00,#c96012);">
@@ -128,7 +128,7 @@
           {% for slide in group %}
           <div class="yc-slot">
             {% if slide.image_path %}
-            <img src="{{ url_for('static', filename=slide.image_path) }}" alt="{{ slide.title }}">
+            <img src="{{ media_url(slide.image_path) }}" alt="{{ slide.title }}">
             {% else %}
             <div class="d-flex align-items-center justify-content-center h-100"
                  style="background:linear-gradient(135deg,#5a2d00,#c96012);">
@@ -163,7 +163,7 @@
 <div class="card border-0 shadow-sm mb-4">
   <div class="card-body d-flex align-items-center gap-3 py-3">
     {% if current_user.profile_photo %}
-    <img src="{{ url_for('static', filename=current_user.profile_photo) }}"
+    <img src="{{ media_url(current_user.profile_photo) }}"
          class="rounded-circle" style="width:56px; height:56px; object-fit:cover;">
     {% else %}
     <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"

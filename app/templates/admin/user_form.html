@@ -45,7 +45,7 @@
             {{ form.profile_photo.label(class="form-label fw-semibold") }}
             {{ form.profile_photo(class="form-control") }}
             {% if user is defined and user.profile_photo %}
-            <img src="{{ url_for('static', filename=user.profile_photo) }}" class="mt-2 rounded" height="60">
+            <img src="{{ media_url(user.profile_photo) }}" class="mt-2 rounded" height="60">
             {% endif %}
           </div>
 

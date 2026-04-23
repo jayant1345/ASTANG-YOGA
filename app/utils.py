@@ -17,11 +17,23 @@ def allowed_file(filename):
 
 
 def save_upload(file, subfolder):
+    if current_app.config.get('CLOUDINARY_URL'):
+        import cloudinary
+        import cloudinary.uploader
+        cloudinary.config(cloudinary_url=current_app.config['CLOUDINARY_URL'])
+        result = cloudinary.uploader.upload(
+            file,
+            folder=f'astang_yoga/{subfolder}',
+            resource_type='auto',
+        )
+        return result['secure_url']
+
     filename = secure_filename(file.filename)
     ts = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
     filename = f"{ts}_{filename}"
-    path = os.path.join(current_app.config['UPLOAD_FOLDER'], subfolder, filename)
-    file.save(path)
+    upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], subfolder)
+    os.makedirs(upload_dir, exist_ok=True)
+    file.save(os.path.join(upload_dir, filename))
     return f"uploads/{subfolder}/{filename}"
 
 

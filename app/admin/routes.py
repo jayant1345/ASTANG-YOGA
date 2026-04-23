@@ -585,7 +585,7 @@ def carousel_new():
             is_active=form.is_active.data,
         )
         if form.image.data and form.image.data.filename:
-            slide.image_path = save_upload(form.image.data, 'profiles')
+            slide.image_path = save_upload(form.image.data, 'slides')
         db.session.add(slide)
         db.session.commit()
         flash('Slide added.', 'success')
@@ -605,7 +605,7 @@ def carousel_edit(slide_id):
         slide.slide_order = int(form.slide_order.data or 0)
         slide.is_active = form.is_active.data
         if form.image.data and form.image.data.filename:
-            slide.image_path = save_upload(form.image.data, 'profiles')
+            slide.image_path = save_upload(form.image.data, 'slides')
         db.session.commit()
         flash('Slide updated.', 'success')
         return redirect(url_for('admin.carousel'))
