@@ -72,7 +72,12 @@ class User(db.Model, UserMixin):
         day_of_month = today.day
         grace_period = current_app.config.get('GRACE_PERIOD_DAYS', 5)
 
-        if day_of_month <= grace_period:
+        # Only go overdue if the student has paid before but missed this month.
+        # A student with no payment history at all is always pending (not overdue).
+        if latest_fee is None:
+            status = 'pending'
+            days_overdue = 0
+        elif day_of_month <= grace_period:
             status = 'pending'
             days_overdue = 0
         else:
