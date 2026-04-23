@@ -117,6 +117,8 @@ def session_end(session_id):
     session_obj.ended_at = now_ist()
     db.session.commit()
     flash('Session ended.', 'success')
+    if current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
     return redirect(url_for('instructor.dashboard'))
 
 

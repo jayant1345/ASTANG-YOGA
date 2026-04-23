@@ -250,10 +250,17 @@
             <td>{{ s.instructor.name }}</td>
             <td>{{ s.started_at.strftime('%H:%M') }}</td>
             <td><span class="badge bg-success">{{ s.attendances.count() }}</span></td>
-            <td>
+            <td class="d-flex gap-2">
               <a href="{{ url_for('instructor.session_live', session_id=s.id) }}" class="btn btn-sm btn-outline-primary">
                 <i class="bi bi-eye"></i> View
               </a>
+              <form method="POST" action="{{ url_for('instructor.session_end', session_id=s.id) }}"
+                    onsubmit="return confirm('End session for {{ s.yoga_class.name }}?')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-danger">
+                  <i class="bi bi-stop-circle"></i> End
+                </button>
+              </form>
             </td>
           </tr>
           {% endfor %}
