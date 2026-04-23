@@ -7,6 +7,8 @@ from app.models import Task, TaskSubmission, StudentClass, YogaClass, Attendance
 from app.decorators import student_required
 from app.utils import save_upload, allowed_file, now_ist
 
+PHOTO_ALLOWED = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
 
 @bp.route('/')
 @login_required
@@ -47,6 +49,24 @@ def dashboard():
                            enrolled_classes=enrolled_classes,
                            slides=slides,
                            total_attendance=total_attendance)
+
+
+@bp.route('/profile/photo', methods=['POST'])
+@login_required
+@student_required
+def update_photo():
+    file = request.files.get('photo')
+    if not file or not file.filename:
+        flash('No file selected.', 'warning')
+        return redirect(url_for('student.dashboard'))
+    ext = file.filename.rsplit('.', 1)[-1].lower()
+    if ext not in PHOTO_ALLOWED:
+        flash('Only image files are allowed (jpg, png, gif, webp).', 'danger')
+        return redirect(url_for('student.dashboard'))
+    current_user.profile_photo = save_upload(file, 'profiles')
+    db.session.commit()
+    flash('Profile photo updated!', 'success')
+    return redirect(url_for('student.dashboard'))
 
 
 @bp.route('/fees')
