@@ -642,3 +642,85 @@ def carousel_delete(slide_id):
     db.session.commit()
     flash('Slide deleted.', 'success')
     return redirect(url_for('admin.carousel'))
+
+
+# ── Full Data Export (ZIP of CSVs) ────────────────────────────────────────────
+
+@bp.route('/export')
+@login_required
+@admin_required
+def export_all():
+    import io as _io
+    import csv
+    import zipfile
+    from flask import send_file
+
+    buf = _io.BytesIO()
+    with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as zf:
+
+        # 1. users.csv — all accounts
+        out = _io.StringIO()
+        w = csv.writer(out)
+        w.writerow(['ID', 'Name', 'Email', 'Phone', 'Role',
+                    'Blood Group', 'Medical Condition', 'Active', 'Joined'])
+        for u in User.query.order_by(User.role, User.name).all():
+            w.writerow([
+                u.id, u.name, u.email, u.phone or '',
+                u.role, u.blood_group or '', u.medical_condition or '',
+                'Yes' if u.is_active else 'No',
+                u.created_at.strftime('%Y-%m-%d') if u.created_at else '',
+            ])
+        zf.writestr('users.csv', out.getvalue())
+
+        # 2. enrollments.csv
+        out = _io.StringIO()
+        w = csv.writer(out)
+        w.writerow(['Student', 'Email', 'Class', 'Joined Date', 'Active'])
+        for e in (StudentClass.query
+                  .join(User, User.id == StudentClass.student_id)
+                  .order_by(User.name).all()):
+            yc = YogaClass.query.get(e.class_id)
+            w.writerow([
+                e.student.name, e.student.email,
+                yc.name if yc else '',
+                e.joined_date.isoformat() if e.joined_date else '',
+                'Yes' if e.is_active else 'No',
+            ])
+        zf.writestr('enrollments.csv', out.getvalue())
+
+        # 3. fee_records.csv
+        out = _io.StringIO()
+        w = csv.writer(out)
+        w.writerow(['Student', 'Email', 'Class', 'Month (YYYY-MM)',
+                    'Amount (Rs)', 'Payment Date', 'Method', 'Remarks'])
+        for r in FeeRecord.query.order_by(FeeRecord.payment_date.desc()).all():
+            w.writerow([
+                r.student.name, r.student.email, r.yoga_class.name,
+                r.paid_for_month, r.amount,
+                r.payment_date.isoformat(),
+                r.method_note or '', r.remarks or '',
+            ])
+        zf.writestr('fee_records.csv', out.getvalue())
+
+        # 4. attendance.csv
+        out = _io.StringIO()
+        w = csv.writer(out)
+        w.writerow(['Date', 'Class', 'Student', 'Email',
+                    'Status', 'Scan Time', 'Admin Override'])
+        for a in (Attendance.query
+                  .join(ClassSession, ClassSession.id == Attendance.session_id)
+                  .order_by(ClassSession.started_at.desc()).all()):
+            w.writerow([
+                a.session.started_at.strftime('%Y-%m-%d'),
+                a.session.yoga_class.name,
+                a.student.name, a.student.email,
+                a.status,
+                a.timestamp.strftime('%H:%M:%S'),
+                'Yes' if a.overridden_by_admin else 'No',
+            ])
+        zf.writestr('attendance.csv', out.getvalue())
+
+    buf.seek(0)
+    filename = f"astang_yoga_backup_{now_ist().strftime('%Y%m%d_%H%M')}.zip"
+    return send_file(buf, mimetype='application/zip',
+                     as_attachment=True, download_name=filename)
